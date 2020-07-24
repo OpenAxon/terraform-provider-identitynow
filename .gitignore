@@ -1,0 +1,26 @@
+.swp
+.terraform
+*.backup
+**/generated
+.DS_Store
+.idea/workspace.xml
+.idea/tasks.xml
+crash.log
+.vagrant
+*.hattip
+plan.txt
+output.txt
+launch.json
+config.yaml
+*_plan.log
+file_targets_out.txt
+*.out
+settings.json
+.secrets/*
+.unlocked/*
+unlocked
+.venv/
+
+# Intellij
+.idea
+*.iml
