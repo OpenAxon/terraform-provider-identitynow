@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -44,7 +45,7 @@ func NewClient(clientId string, secret string) *Client {
 }
 
 func (c *Client) GetToken(ctx context.Context) error {
-	log.Printf("%s/oauth/token?grant_type=client_credentials&client_id=%s&client_secret=%s", c.BaseURL, c.clientId, c.clientSecret)
+	//log.Printf("%s/oauth/token?grant_type=client_credentials&client_id=%s&client_secret=%s", c.BaseURL, c.clientId, c.clientSecret)
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/oauth/token?grant_type=client_credentials&client_id=%s&client_secret=%s", c.BaseURL, c.clientId, c.clientSecret), nil)
 	if err != nil {
 		return err
@@ -80,6 +81,29 @@ func (c *Client) GetSource(ctx context.Context, id string) (*SourceAAD, error) {
 	return &res, nil
 }
 
+func (c *Client) CreateSource(ctx context.Context, source *SourceAAD) (*SourceAAD, error) {
+	body, err := json.Marshal(&source)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/beta/sources", c.BaseURL), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("New request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := SourceAAD{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed source creation response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
@@ -87,9 +111,9 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
+		log.Printf("Error After httpclient.do:%+v\n", err)
 		return err
 	}
-	log.Printf("da full response:%+v\n", res)
 	//body, err := ioutil.ReadAll(res.Body)
 	//log.Printf("da body:%s", string(body))
 
@@ -104,14 +128,10 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 		return fmt.Errorf("unknown error, status code: %d", res.StatusCode)
 	}
 
-	//fullResponse := successResponse{
-	//	Data: v,
-	//}
 	if err = json.NewDecoder(res.Body).Decode(&v); err != nil {
 		log.Printf("Decoder error:%s", err)
 		return err
 	}
-	log.Printf("Final response:%+v\n", v)
 
 	return nil
 }

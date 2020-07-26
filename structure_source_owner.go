@@ -21,3 +21,20 @@ func flattenSourceOwner(in *Owner, p []interface{}) []interface{} {
 	return []interface{}{obj}
 
 }
+
+// Expanders
+
+func expandSourceOwner(p []interface{}) *Owner {
+	obj := Owner{}
+
+	if len(p) == 0 || p[0] == nil {
+		return &obj
+	}
+	in := p[0].(map[string]interface{})
+
+	obj.ID = in["id"].(string)
+	obj.Name = in["name"].(string)
+	obj.Type = in["type"].(string)
+
+	return &obj
+}
