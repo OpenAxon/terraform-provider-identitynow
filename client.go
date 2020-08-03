@@ -11,10 +11,6 @@ import (
 	"time"
 )
 
-const (
-	BaseURL = "https://axon-sb.api.identitynow.com"
-)
-
 type Client struct {
 	BaseURL      string
 	clientId     string
@@ -24,18 +20,17 @@ type Client struct {
 }
 
 type errorResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	DetailCode    	string    `json:"detailCode"`
+	Messages	[]struct {
+		Locale string `json:"locale"`
+		LocaleOrigen   string `json:"localeOrigin"`
+		Text string `json:"text"`
+	} `json:"messages"`
 }
 
-type successResponse struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
-}
-
-func NewClient(clientId string, secret string) *Client {
+func NewClient(baseURL string, clientId string, secret string) *Client {
 	return &Client{
-		BaseURL:      BaseURL,
+		BaseURL:      baseURL,
 		clientId:     clientId,
 		clientSecret: secret,
 		HTTPClient: &http.Client{
@@ -104,6 +99,48 @@ func (c *Client) CreateSource(ctx context.Context, source *SourceAAD) (*SourceAA
 	return &res, nil
 }
 
+func (c *Client) UpdateSource(ctx context.Context, source *SourceAAD) (*SourceAAD, error) {
+	body, err := json.Marshal(&source)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/beta/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Creation of new http request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := SourceAAD{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed source update response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) DeleteSource(ctx context.Context, source *SourceAAD) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/beta/sources/%s", c.BaseURL, source.ID), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed:%+v\n", err)
+		return err
+	}
+
+	req = req.WithContext(ctx)
+
+	var res interface{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed source update response:%+v\n", res)
+		log.Fatal(err)
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
@@ -114,15 +151,19 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 		log.Printf("Error After httpclient.do:%+v\n", err)
 		return err
 	}
-	//body, err := ioutil.ReadAll(res.Body)
-	//log.Printf("da body:%s", string(body))
 
 	defer res.Body.Close()
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		var errRes errorResponse
-		if err = json.NewDecoder(res.Body).Decode(&errRes); err == nil {
-			return errors.New(errRes.Message)
+		err = json.NewDecoder(res.Body).Decode(&errRes)
+		if err == nil {
+			if res.StatusCode == http.StatusNotFound {
+				// on the return statement, an interface value of type error is created by the compiler and bound to the pointer to satisfy the return argument.
+				return &NotFoundError{errRes.Messages[0].Text}
+			} else {
+				return errors.New(errRes.Messages[0].Text)
+			}
 		}
 
 		return fmt.Errorf("unknown error, status code: %d", res.StatusCode)

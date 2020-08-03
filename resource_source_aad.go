@@ -26,17 +26,12 @@ func resourceSourceAADCreate(d *schema.ResourceData, m interface{}) error {
 
         log.Printf("[INFO] Creating Source AAD %s", sourceAAD.Name)
 
-        c := NewClient("c70cde50e14d4e5e9082392056f9faf3", "e622774e2d52c6e6d5c5f2c7bea5134e9a892adc63c2529c04467064db9b2ba1")
-        ctx := context.Background()
-
-        if err := c.GetToken(ctx); err != nil {
+        c, err := m.(*Config).IdentityNowClient()
+        if err != nil {
                 return err
         }
-        if len(c.accessToken) == 0 {
-                return fmt.Errorf("access token is empty")
-        }
 
-        newSource, err := c.CreateSource(ctx, sourceAAD)
+        newSource, err := c.CreateSource(context.Background(), sourceAAD)
         if err != nil {
                 return err
         }
@@ -50,13 +45,77 @@ func resourceSourceAADCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceSourceAADRead(d *schema.ResourceData, m interface{}) error {
+        log.Printf("[INFO] Refreshing AAD source ID %s", d.Id())
+        client, err := m.(*Config).IdentityNowClient()
+        if err != nil {
+                return err
+        }
+
+        source, err := client.GetSource(context.Background(), d.Id())
+        if err != nil {
+                // non-panicking type assertion, 2nd arg is boolean indicating type match
+                _, notFound := err.(*NotFoundError)
+                if notFound {
+                        log.Printf("[INFO] Source ID %s not found.", d.Id())
+                        d.SetId("")
+                        return nil
+                }
+                return err
+        }
+
+        err = flattenSourceAAD(d, source)
+        if err != nil {
+                return err
+        }
+
         return nil
 }
 
 func resourceSourceAADUpdate(d *schema.ResourceData, m interface{}) error {
+        log.Printf("[INFO] Updating AAD Source ID %s", d.Id())
+        client, err := m.(*Config).IdentityNowClient()
+        if err != nil {
+                return err
+        }
+
+        updatedSource, err := expandSourceAAD(d)
+        if err != nil {
+                return err
+        }
+
+        _, err = client.UpdateSource(context.Background(), updatedSource)
+        if err != nil {
+                return err
+        }
+
         return resourceSourceAADRead(d, m)
 }
 
 func resourceSourceAADDelete(d *schema.ResourceData, m interface{}) error {
+        log.Printf("[INFO] Deleting Source ID %s", d.Id())
+
+        client, err := m.(*Config).IdentityNowClient()
+        if err != nil {
+                return err
+        }
+
+        source, err := client.GetSource(context.Background(), d.Id())
+        if err != nil {
+                // non-panicking type assertion, 2nd arg is boolean indicating type match
+                _, notFound := err.(*NotFoundError)
+                if notFound {
+                        log.Printf("[INFO] Source ID %s not found.", d.Id())
+                        d.SetId("")
+                        return nil
+                }
+                return err
+        }
+
+        err = client.DeleteSource(context.Background(), source)
+        if err != nil {
+                return fmt.Errorf("Error removing Source: %s", err)
+        }
+
+        d.SetId("")
         return nil
 }

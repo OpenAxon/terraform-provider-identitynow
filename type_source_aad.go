@@ -99,7 +99,6 @@ type ConnectorAttributes struct {
 	UseForAccounts              string      `json:"useForAccounts,omitempty"`
 	IQServiceHost               interface{} `json:"IQServiceHost,omitempty"`
 	FormPath                    interface{} `json:"formPath,omitempty"`
-	CloudCacheUpdate            int64       `json:"cloudCacheUpdate,omitempty"`
 	TemplateApplication         string      `json:"templateApplication,omitempty"`
 	Encrypted                   string      `json:"encrypted,omitempty"`
 	IsB2CTenant                 bool        `json:"isB2CTenant,omitempty"`

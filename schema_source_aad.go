@@ -35,6 +35,22 @@ func sourceFields() map[string]*schema.Schema {
 				Schema: sourceOwnerFields(),
 			},
 		},
+		"cluster": {
+			Type:          schema.TypeList,
+			MaxItems:      1,
+			Optional:      true,
+			Elem: &schema.Resource{
+				Schema: sourceClusterFields(),
+			},
+		},
+		"connector_attributes": {
+			Type:          schema.TypeList,
+			MaxItems:      1,
+			Optional:      true,
+			Elem: &schema.Resource{
+				Schema: sourceConnectorAttributesFields(),
+			},
+		},
 	}
 
 	//for k, v := range commonAnnotationLabelFields() {
