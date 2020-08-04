@@ -3,8 +3,8 @@ data "vault_generic_secret" "aad_client" {
 }
 
 resource "identitynow_source_azure_ad" "source_azure_ad_ag1" {
-  name = "Azure AD product (usgov) TERRAFORM TEST 6"
-  description = "The Azure Active Directory connector for the tenant with all US gov subscriptions on the product side. TERRAFORM TEST 6"
+  name = "Azure AD product (usgov) TERRAFORM TEST 8"
+  description = "The Azure Active Directory connector for the tenant with all US gov subscriptions on the product side. TERRAFORM TEST 8a"
 
   owner {
     id = "2c91808472ed35250172f1e9ec947b22"

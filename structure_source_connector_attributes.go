@@ -18,6 +18,7 @@ func flattenSourceConnectorAttributes(in *ConnectorAttributes, p []interface{}) 
 	obj["client_id"] = in.ClientID
 	obj["client_secret"] = in.ClientSecret
 	obj["domain_name"] = in.DomainName
+	obj["cloud_external_id"] = in.CloudExternalID
 	obj["ms_graph_resource_base"] = in.MsGraphResourceBase
 	obj["ms_graph_token_base"] = in.MsGraphTokenBase
 	obj["azure_ad_graph_resource_base"] = in.AzureADGraphResourceBase
@@ -41,6 +42,7 @@ func expandSourceConnectorAttributes(p []interface{}) *ConnectorAttributes {
 	obj.ClientID = in["client_id"].(string)
 	obj.ClientSecret = in["client_secret"].(string)
 	obj.DomainName = in["domain_name"].(string)
+	obj.CloudExternalID = in["cloud_external_id"].(string)
 	obj.MsGraphResourceBase = in["ms_graph_resource_base"].(string)
 	obj.MsGraphTokenBase = in["ms_graph_token_base"].(string)
 	obj.AzureADGraphResourceBase = in["azure_ad_graph_resource_base"].(string)

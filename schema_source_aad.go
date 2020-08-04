@@ -43,6 +43,14 @@ func sourceFields() map[string]*schema.Schema {
 				Schema: sourceClusterFields(),
 			},
 		},
+		"account_correlation_config": {
+			Type:          schema.TypeList,
+			MaxItems:      1,
+			Computed:      true,
+			Elem: &schema.Resource{
+				Schema: sourceAccountCorrelationConfigFields(),
+			},
+		},
 		"connector_attributes": {
 			Type:          schema.TypeList,
 			MaxItems:      1,

@@ -24,6 +24,11 @@ func sourceConnectorAttributesFields() map[string]*schema.Schema {
 			Description: "Client id for the connector client credentials",
 			Sensitive: 	 true,
 		},
+		"cloud_external_id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Cloud external ID (related to the main id?)",
+		},
 		"domain_name": {
 			Type:        schema.TypeString,
 			Optional:    true,

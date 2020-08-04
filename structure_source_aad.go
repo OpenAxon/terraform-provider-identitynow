@@ -36,7 +36,16 @@ func flattenSourceAAD(d *schema.ResourceData, in *SourceAAD) error {
 		d.Set("cluster", flattenSourceCluster(in.Cluster, v))
 	}
 
-	if in.Cluster != nil {
+	if in.AccountCorrelationConfig != nil {
+		v, ok := d.Get("account_correlation_config").([]interface{})
+		if !ok {
+			v = []interface{}{}
+		}
+
+		d.Set("account_correlation_config", flattenSourceAccountCorrelationConfig(in.AccountCorrelationConfig, v))
+	}
+
+	if in.ConnectorAttributes != nil {
 		v, ok := d.Get("connector_attributes").([]interface{})
 		if !ok {
 			v = []interface{}{}
@@ -77,6 +86,10 @@ func expandSourceAAD(in *schema.ResourceData) (*SourceAAD, error) {
 
 	if v, ok := in.Get("cluster").([]interface{}); ok && len(v) > 0 {
 		obj.Cluster = expandSourceCluster(v)
+	}
+
+	if v, ok := in.Get("account_correlation_config").([]interface{}); ok && len(v) > 0 {
+		obj.AccountCorrelationConfig = expandSourceAccountCorrelationConfig(v)
 	}
 
 	if v, ok := in.Get("connector_attributes").([]interface{}); ok && len(v) > 0 {
