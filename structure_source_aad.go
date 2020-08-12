@@ -54,6 +54,15 @@ func flattenSourceAAD(d *schema.ResourceData, in *SourceAAD) error {
 		d.Set("connector_attributes", flattenSourceConnectorAttributes(in.ConnectorAttributes, v))
 	}
 
+	if in.Schemas != nil {
+		v, ok := d.Get("schemas").([]interface{})
+		if !ok {
+			v = []interface{}{}
+		}
+
+		d.Set("schemas", flattenSourceSchema(in.Schemas, v))
+	}
+
 	return nil
 }
 
@@ -82,6 +91,10 @@ func expandSourceAAD(in *schema.ResourceData) (*SourceAAD, error) {
 
 	if v, ok := in.Get("owner").([]interface{}); ok && len(v) > 0 {
 		obj.Owner = expandSourceOwner(v)
+	}
+
+	if v, ok := in.Get("schemas").([]interface{}); ok && len(v) > 0 {
+		obj.Schemas = expandSourceSchema(v)
 	}
 
 	if v, ok := in.Get("cluster").([]interface{}); ok && len(v) > 0 {

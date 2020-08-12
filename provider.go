@@ -41,6 +41,10 @@ func Provider() *schema.Provider {
 	                "identitynow_source_azure_ad" : resourceSourceAAD(),
                 },
 
+                DataSourcesMap: map[string]*schema.Resource{
+                    "identitynow_source_azure_ad" : dataSourceSource(),
+                },
+
                 ConfigureFunc: providerConfigure,
         }
 }

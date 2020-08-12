@@ -11,11 +11,7 @@ type SourceAAD struct {
 	ManagerCorrelationMapping interface{} `json:"managerCorrelationMapping,omitempty"`
 	ManagerCorrelationRule    interface{} `json:"managerCorrelationRule,omitempty"`
 	BeforeProvisioningRule    interface{} `json:"beforeProvisioningRule,omitempty"`
-	Schemas                   []struct {
-		Type string `json:"type"`
-		ID   string `json:"id"`
-		Name string `json:"name"`
-	} `json:"schemas,omitempty"`
+	Schemas                   []*Schema `json:"schemas,omitempty"`
 	PasswordPolicies []struct {
 		Type string `json:"type"`
 		ID   string `json:"id"`
@@ -48,6 +44,12 @@ type Cluster struct {
 }
 
 type AccountCorrelationConfig struct {
+	Type string `json:"type"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Schema struct {
 	Type string `json:"type"`
 	ID   string `json:"id"`
 	Name string `json:"name"`

@@ -4,7 +4,7 @@ data "vault_generic_secret" "aad_client" {
 
 resource "identitynow_source_azure_ad" "source_azure_ad_ag1" {
   name = "Azure AD product (usgov) TERRAFORM TEST 8"
-  description = "The Azure Active Directory connector for the tenant with all US gov subscriptions on the product side. TERRAFORM TEST 8a"
+  description = "The Azure Active Directory connector for the tenant with all US gov subscriptions on the product side. TERRAFORM TEST 8b"
 
   owner {
     id = "2c91808472ed35250172f1e9ec947b22"
@@ -28,3 +28,4 @@ resource "identitynow_source_azure_ad" "source_azure_ad_ag1" {
     azure_ad_graph_token_base = "https://login.microsoftonline.us"
   }
 }
+git comm

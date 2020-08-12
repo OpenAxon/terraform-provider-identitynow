@@ -10,17 +10,17 @@ func sourceAccountCorrelationConfigFields() map[string]*schema.Schema {
 	s := map[string]*schema.Schema{
 		"id": {
 			Type:        schema.TypeString,
-			Computed:    true,
+			Optional:    true,
 			Description: "Id of account correlation config",
 		},
 		"name": {
 			Type:        schema.TypeString,
-			Computed:    true,
+			Optional:    true,
 			Description: "Name of account correlation config",
 		},
 		"type": {
 			Type:        schema.TypeString,
-			Computed:    true,
+			Optional:    true,
 			Description: "Type of account correlation config",
 		},
 	}

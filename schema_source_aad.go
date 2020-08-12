@@ -35,6 +35,13 @@ func sourceFields() map[string]*schema.Schema {
 				Schema: sourceOwnerFields(),
 			},
 		},
+		"schemas": {
+			Type:          schema.TypeList,
+			Computed:      true,
+			Elem: &schema.Resource{
+				Schema: sourceSchemaFields(),
+			},
+		},
 		"cluster": {
 			Type:          schema.TypeList,
 			MaxItems:      1,
