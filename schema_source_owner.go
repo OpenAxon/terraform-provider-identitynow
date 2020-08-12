@@ -21,7 +21,7 @@ func sourceOwnerFields() map[string]*schema.Schema {
 		"type": {
 			Type:        schema.TypeString,
 			Optional:    true,
-			Default:	"IDENTITY",
+			Default:     "IDENTITY",
 			Description: "Type of owner",
 		},
 	}

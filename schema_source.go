@@ -19,13 +19,13 @@ func sourceFields() map[string]*schema.Schema {
 		"connector": {
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew: true,
+			ForceNew:    true,
 			Description: "Source connector type",
 		},
 		"delete_threshold": {
-			Type:         schema.TypeInt,
-			Optional:     true,
-			Default:      10,
+			Type:     schema.TypeInt,
+			Optional: true,
+			Default:  10,
 		},
 		"authoritative": {
 			Type:        schema.TypeBool,
@@ -34,40 +34,40 @@ func sourceFields() map[string]*schema.Schema {
 			Default:     false,
 		},
 		"owner": {
-			Type:          schema.TypeList,
-			MaxItems:      1,
-			Required:      true,
+			Type:     schema.TypeList,
+			MaxItems: 1,
+			Required: true,
 			Elem: &schema.Resource{
 				Schema: sourceOwnerFields(),
 			},
 		},
 		"schemas": {
-			Type:          schema.TypeList,
-			Computed:      true,
+			Type:     schema.TypeList,
+			Computed: true,
 			Elem: &schema.Resource{
 				Schema: sourceSchemaFields(),
 			},
 		},
 		"cluster": {
-			Type:          schema.TypeList,
-			MaxItems:      1,
-			Optional:      true,
+			Type:     schema.TypeList,
+			MaxItems: 1,
+			Optional: true,
 			Elem: &schema.Resource{
 				Schema: sourceClusterFields(),
 			},
 		},
 		"account_correlation_config": {
-			Type:          schema.TypeList,
-			MaxItems:      1,
-			Computed:      true,
+			Type:     schema.TypeList,
+			MaxItems: 1,
+			Computed: true,
 			Elem: &schema.Resource{
 				Schema: sourceAccountCorrelationConfigFields(),
 			},
 		},
 		"connector_attributes": {
-			Type:          schema.TypeList,
-			MaxItems:      1,
-			Optional:      true,
+			Type:     schema.TypeList,
+			MaxItems: 1,
+			Optional: true,
 			Elem: &schema.Resource{
 				Schema: sourceConnectorAttributesFields(),
 			},

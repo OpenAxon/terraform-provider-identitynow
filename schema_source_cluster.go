@@ -21,7 +21,7 @@ func sourceClusterFields() map[string]*schema.Schema {
 		"type": {
 			Type:        schema.TypeString,
 			Optional:    true,
-			Default:	"CLUSTER",
+			Default:     "CLUSTER",
 			Description: "Type of cluster",
 		},
 	}

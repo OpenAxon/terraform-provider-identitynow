@@ -20,11 +20,11 @@ type Client struct {
 }
 
 type errorResponse struct {
-	DetailCode    	string    `json:"detailCode"`
-	Messages	[]struct {
-		Locale string `json:"locale"`
-		LocaleOrigen   string `json:"localeOrigin"`
-		Text string `json:"text"`
+	DetailCode string `json:"detailCode"`
+	Messages   []struct {
+		Locale       string `json:"locale"`
+		LocaleOrigen string `json:"localeOrigin"`
+		Text         string `json:"text"`
 	} `json:"messages"`
 }
 

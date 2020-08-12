@@ -7,9 +7,9 @@ import (
 
 // Config is the configuration parameters for an IdentityNow API
 type Config struct {
-	URL                 string `json:"url"`
-	ClientId            string `json:"cacert"`
-	ClientSecret        string `json:"tokenKey"`
+	URL          string `json:"url"`
+	ClientId     string `json:"cacert"`
+	ClientSecret string `json:"tokenKey"`
 }
 
 func (c *Config) IdentityNowClient() (*Client, error) {
