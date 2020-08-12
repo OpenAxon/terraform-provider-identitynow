@@ -59,7 +59,7 @@ func (c *Client) GetToken(ctx context.Context) error {
 	return nil
 }
 
-func (c *Client) GetSource(ctx context.Context, id string) (*SourceAAD, error) {
+func (c *Client) GetSource(ctx context.Context, id string) (*Source, error) {
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/sources/%s", c.BaseURL, id), nil)
 	if err != nil {
@@ -68,7 +68,7 @@ func (c *Client) GetSource(ctx context.Context, id string) (*SourceAAD, error) {
 
 	req = req.WithContext(ctx)
 
-	res := SourceAAD{}
+	res := Source{}
 	if err := c.sendRequest(req, &res); err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (c *Client) GetSource(ctx context.Context, id string) (*SourceAAD, error) {
 	return &res, nil
 }
 
-func (c *Client) CreateSource(ctx context.Context, source *SourceAAD) (*SourceAAD, error) {
+func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, error) {
 	body, err := json.Marshal(&source)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (c *Client) CreateSource(ctx context.Context, source *SourceAAD) (*SourceAA
 
 	req = req.WithContext(ctx)
 
-	res := SourceAAD{}
+	res := Source{}
 	if err := c.sendRequest(req, &res); err != nil {
 		log.Printf("Failed source creation response:%+v\n", res)
 		log.Fatal(err)
@@ -99,7 +99,7 @@ func (c *Client) CreateSource(ctx context.Context, source *SourceAAD) (*SourceAA
 	return &res, nil
 }
 
-func (c *Client) UpdateSource(ctx context.Context, source *SourceAAD) (*SourceAAD, error) {
+func (c *Client) UpdateSource(ctx context.Context, source *Source) (*Source, error) {
 	body, err := json.Marshal(&source)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (c *Client) UpdateSource(ctx context.Context, source *SourceAAD) (*SourceAA
 
 	req = req.WithContext(ctx)
 
-	res := SourceAAD{}
+	res := Source{}
 	if err := c.sendRequest(req, &res); err != nil {
 		log.Printf("Failed source update response:%+v\n", res)
 		log.Fatal(err)
@@ -122,7 +122,7 @@ func (c *Client) UpdateSource(ctx context.Context, source *SourceAAD) (*SourceAA
 	return &res, nil
 }
 
-func (c *Client) DeleteSource(ctx context.Context, source *SourceAAD) error {
+func (c *Client) DeleteSource(ctx context.Context, source *Source) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/beta/sources/%s", c.BaseURL, source.ID), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)

@@ -7,7 +7,7 @@ import (
 
 // Flatteners
 
-func flattenSourceAAD(d *schema.ResourceData, in *SourceAAD) error {
+func flattenSource(d *schema.ResourceData, in *Source) error {
 	if in == nil {
 		return nil
 	}
@@ -15,6 +15,7 @@ func flattenSourceAAD(d *schema.ResourceData, in *SourceAAD) error {
 	d.SetId(in.ID)
 	d.Set("name", in.Name)
 	d.Set("description", in.Description)
+	d.Set("connector", in.Connector)
 	d.Set("delete_threshold", in.DeleteThreshold)
 	d.Set("authoritative", in.Authoritative)
 
@@ -68,8 +69,8 @@ func flattenSourceAAD(d *schema.ResourceData, in *SourceAAD) error {
 
 // Expanders
 
-func expandSourceAAD(in *schema.ResourceData) (*SourceAAD, error) {
-	obj := SourceAAD{}
+func expandSource(in *schema.ResourceData) (*Source, error) {
+	obj := Source{}
 	if in == nil {
 		return nil, fmt.Errorf("[ERROR] Expanding source: Schema Resource data is nil")
 	}
@@ -79,7 +80,7 @@ func expandSourceAAD(in *schema.ResourceData) (*SourceAAD, error) {
 
 	obj.Name = in.Get("name").(string)
 	obj.Description = in.Get("description").(string)
-	obj.Connector = "azure-active-directory"
+	obj.Connector = in.Get("connector").(string)
 
 	if v, ok := in.Get("authoritative").(bool); ok {
 		obj.Authoritative = v

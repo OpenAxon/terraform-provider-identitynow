@@ -97,5 +97,5 @@ func dataSourceSourceRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	return flattenSourceAAD(d, source)
+	return flattenSource(d, source)
 }

@@ -2,7 +2,7 @@ package main
 
 import "time"
 
-type SourceAAD struct {
+type Source struct {
 	Description string `json:"description"`
 	Owner       *Owner `json:"owner"`
 	Cluster 	*Cluster `json:"cluster,omitempty"`

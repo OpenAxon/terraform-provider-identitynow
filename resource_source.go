@@ -7,45 +7,45 @@ import (
         "log"
 )
 
-func resourceSourceAAD() *schema.Resource {
+func resourceSource() *schema.Resource {
         return &schema.Resource{
-                Create: resourceSourceAADCreate,
-                Read:   resourceSourceAADRead,
-                Update: resourceSourceAADUpdate,
-                Delete: resourceSourceAADDelete,
+                Create: resourceSourceCreate,
+                Read:   resourceSourceRead,
+                Update: resourceSourceUpdate,
+                Delete: resourceSourceDelete,
 
                 Schema: sourceFields(),
         }
 }
 
-func resourceSourceAADCreate(d *schema.ResourceData, m interface{}) error {
-        sourceAAD, err := expandSourceAAD(d)
+func resourceSourceCreate(d *schema.ResourceData, m interface{}) error {
+        source, err := expandSource(d)
         if err != nil {
                 return err
         }
 
-        log.Printf("[INFO] Creating Source AAD %s", sourceAAD.Name)
+        log.Printf("[INFO] Creating Source %s", source.Name)
 
         c, err := m.(*Config).IdentityNowClient()
         if err != nil {
                 return err
         }
 
-        newSource, err := c.CreateSource(context.Background(), sourceAAD)
+        newSource, err := c.CreateSource(context.Background(), source)
         if err != nil {
                 return err
         }
 
-        err = flattenSourceAAD(d, newSource)
+        err = flattenSource(d, newSource)
         if err != nil {
                 return err
         }
 
-        return resourceSourceAADRead(d, m)
+        return resourceSourceRead(d, m)
 }
 
-func resourceSourceAADRead(d *schema.ResourceData, m interface{}) error {
-        log.Printf("[INFO] Refreshing AAD source ID %s", d.Id())
+func resourceSourceRead(d *schema.ResourceData, m interface{}) error {
+        log.Printf("[INFO] Refreshing source ID %s", d.Id())
         client, err := m.(*Config).IdentityNowClient()
         if err != nil {
                 return err
@@ -63,7 +63,7 @@ func resourceSourceAADRead(d *schema.ResourceData, m interface{}) error {
                 return err
         }
 
-        err = flattenSourceAAD(d, source)
+        err = flattenSource(d, source)
         if err != nil {
                 return err
         }
@@ -71,14 +71,14 @@ func resourceSourceAADRead(d *schema.ResourceData, m interface{}) error {
         return nil
 }
 
-func resourceSourceAADUpdate(d *schema.ResourceData, m interface{}) error {
-        log.Printf("[INFO] Updating AAD Source ID %s", d.Id())
+func resourceSourceUpdate(d *schema.ResourceData, m interface{}) error {
+        log.Printf("[INFO] Updating Source ID %s", d.Id())
         client, err := m.(*Config).IdentityNowClient()
         if err != nil {
                 return err
         }
 
-        updatedSource, err := expandSourceAAD(d)
+        updatedSource, err := expandSource(d)
         if err != nil {
                 return err
         }
@@ -88,10 +88,10 @@ func resourceSourceAADUpdate(d *schema.ResourceData, m interface{}) error {
                 return err
         }
 
-        return resourceSourceAADRead(d, m)
+        return resourceSourceRead(d, m)
 }
 
-func resourceSourceAADDelete(d *schema.ResourceData, m interface{}) error {
+func resourceSourceDelete(d *schema.ResourceData, m interface{}) error {
         log.Printf("[INFO] Deleting Source ID %s", d.Id())
 
         client, err := m.(*Config).IdentityNowClient()

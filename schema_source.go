@@ -16,6 +16,12 @@ func sourceFields() map[string]*schema.Schema {
 			Required:    true,
 			Description: "Source description",
 		},
+		"connector": {
+			Type:        schema.TypeString,
+			Required:    true,
+			ForceNew: true,
+			Description: "Source connector type",
+		},
 		"delete_threshold": {
 			Type:         schema.TypeInt,
 			Optional:     true,
