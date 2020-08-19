@@ -23,6 +23,38 @@ func flattenSourceConnectorAttributes(in *ConnectorAttributes, p []interface{}) 
 	obj["ms_graph_token_base"] = in.MsGraphTokenBase
 	obj["azure_ad_graph_resource_base"] = in.AzureADGraphResourceBase
 	obj["azure_ad_graph_token_base"] = in.AzureADGraphTokenBase
+	obj["iq_service_host"] = in.IQServiceHost
+	obj["iq_service_port"] = in.IQServicePort
+	obj["use_tls_for_iq_service"] = in.UseTLSForIQService
+	obj["iq_service_user"] = in.IQServiceUser
+	obj["iq_service_password"] = in.IQServicePassword
+
+	if in.DomainSettings != nil {
+		v, ok := obj["domain_settings"].([]interface{})
+		if !ok {
+			v = []interface{}{}
+		}
+
+		obj["domain_settings"] = flattenSourceDomainSettings(in.DomainSettings, v)
+	}
+
+	if in.ForestSettings != nil {
+		v, ok := obj["forest_settings"].([]interface{})
+		if !ok {
+			v = []interface{}{}
+		}
+
+		obj["forest_settings"] = flattenSourceForestSettings(in.ForestSettings, v)
+	}
+
+	if in.SearchDNs != nil {
+		v, ok := obj["search_dns"].([]interface{})
+		if !ok {
+			v = []interface{}{}
+		}
+
+		obj["search_dns"] = flattenSourceSearchDNs(in.SearchDNs, v)
+	}
 
 	return []interface{}{obj}
 
@@ -47,6 +79,23 @@ func expandSourceConnectorAttributes(p []interface{}) *ConnectorAttributes {
 	obj.MsGraphTokenBase = in["ms_graph_token_base"].(string)
 	obj.AzureADGraphResourceBase = in["azure_ad_graph_resource_base"].(string)
 	obj.AzureADGraphTokenBase = in["azure_ad_graph_token_base"].(string)
+	obj.IQServiceHost = in["iq_service_host"].(string)
+	obj.IQServicePort = in["iq_service_port"].(string)
+	obj.UseTLSForIQService = in["use_tls_for_iq_service"].(bool)
+	obj.IQServiceUser = in["iq_service_user"].(string)
+	obj.IQServicePassword = in["iq_service_password"].(string)
+
+	if v, ok := in["forest_settings"].([]interface{}); ok && len(v) > 0 {
+		obj.ForestSettings = expandSourceForestSettings(v)
+	}
+
+	if v, ok := in["domain_settings"].([]interface{}); ok && len(v) > 0 {
+		obj.DomainSettings = expandSourceDomainSettings(v)
+	}
+
+	if v, ok := in["search_dns"].([]interface{}); ok && len(v) > 0 {
+		obj.SearchDNs = expandSourceSearchDNs(v)
+	}
 
 	return &obj
 }

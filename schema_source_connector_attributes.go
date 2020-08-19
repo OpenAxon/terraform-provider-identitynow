@@ -54,6 +54,54 @@ func sourceConnectorAttributesFields() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "Base token URL that is used to get an access token for Azure AD Graph API REST calls",
 		},
+		"iq_service_host": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "IQService host url for on-prem Active Directory.",
+		},
+		"iq_service_port": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "IQService port for on-prem Active Directory.",
+		},
+		"use_tls_for_iq_service": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "Use TLS for IQService for on-prem Active Directory.",
+		},
+		"iq_service_user": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Sensitive:   true,
+			Description: "Service Account username for IQService host.",
+		},
+		"iq_service_password": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Sensitive:   true,
+			Description: "Service Account password for IQService host.",
+		},
+		"forest_settings": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: sourceForestSettingsFields(),
+			},
+		},
+		"domain_settings": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: sourceDomainSettingsFields(),
+			},
+		},
+		"search_dns": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: sourceSearchDNsFields(),
+			},
+		},
 	}
 
 	return s

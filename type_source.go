@@ -1,6 +1,8 @@
 package main
 
-import "time"
+import (
+	"time"
+)
 
 type Source struct {
 	Description               string                    `json:"description"`
@@ -85,30 +87,63 @@ type ConnectorAttributes struct {
 		ObjectID string `json:"objectId"`
 		SkuID    string `json:"skuId"`
 	} `json:"subscribedSkus,omitempty"`
-	UseTLSForIQService          bool        `json:"useTLSForIQService,omitempty"`
-	IQServiceUser               interface{} `json:"IQServiceUser,omitempty"`
-	CloudAuthEnabled            bool        `json:"cloudAuthEnabled,omitempty"`
-	HasFullAggregationCompleted bool        `json:"hasFullAggregationCompleted,omitempty"`
-	MsGraphTokenBase            string      `json:"msGraphTokenBase,omitempty"`
-	DeltaAggregation            interface{} `json:"deltaAggregation,omitempty"`
-	CloudExternalID             string      `json:"cloudExternalId,omitempty"`
-	ClientSecret                string      `json:"clientSecret,omitempty"`
-	SamlRequestBody             interface{} `json:"samlRequestBody,omitempty"`
-	ManageO365Groups            bool        `json:"manageO365Groups,omitempty"`
-	AccountDeltaLink            string      `json:"accountDeltaLink,omitempty"`
-	AzureADGraphTokenBase       string      `json:"azureADGraphTokenBase,omitempty"`
-	DeleteThresholdPercentage   int         `json:"deleteThresholdPercentage,omitempty"`
-	UseForAccounts              string      `json:"useForAccounts,omitempty"`
-	IQServiceHost               interface{} `json:"IQServiceHost,omitempty"`
-	FormPath                    interface{} `json:"formPath,omitempty"`
-	TemplateApplication         string      `json:"templateApplication,omitempty"`
-	Encrypted                   string      `json:"encrypted,omitempty"`
-	IsB2CTenant                 bool        `json:"isB2CTenant,omitempty"`
-	DomainName                  string      `json:"domainName,omitempty"`
-	AzureADGraphResourceBase    string      `json:"azureADGraphResourceBase,omitempty"`
-	CloudDisplayName            string      `json:"cloudDisplayName,omitempty"`
-	GrantType                   string      `json:"grantType,omitempty"`
-	BeforeProvisioningRule      interface{} `json:"beforeProvisioningRule,omitempty"`
-	Md5                         string      `json:"md5,omitempty"`
-	Username                    interface{} `json:"username,omitempty"`
+	UseTLSForIQService          bool              `json:"useTLSForIQService,omitempty"`
+	IQServiceUser               interface{}       `json:"IQServiceUser,omitempty"`
+	CloudAuthEnabled            bool              `json:"cloudAuthEnabled,omitempty"`
+	HasFullAggregationCompleted bool              `json:"hasFullAggregationCompleted,omitempty"`
+	MsGraphTokenBase            string            `json:"msGraphTokenBase,omitempty"`
+	DeltaAggregation            interface{}       `json:"deltaAggregation,omitempty"`
+	CloudExternalID             string            `json:"cloudExternalId,omitempty"`
+	ClientSecret                string            `json:"clientSecret,omitempty"`
+	SamlRequestBody             interface{}       `json:"samlRequestBody,omitempty"`
+	ManageO365Groups            bool              `json:"manageO365Groups,omitempty"`
+	AccountDeltaLink            string            `json:"accountDeltaLink,omitempty"`
+	AzureADGraphTokenBase       string            `json:"azureADGraphTokenBase,omitempty"`
+	DeleteThresholdPercentage   int               `json:"deleteThresholdPercentage,omitempty"`
+	UseForAccounts              string            `json:"useForAccounts,omitempty"`
+	IQServiceHost               interface{}       `json:"IQServiceHost,omitempty"`
+	FormPath                    interface{}       `json:"formPath,omitempty"`
+	TemplateApplication         string            `json:"templateApplication,omitempty"`
+	Encrypted                   string            `json:"encrypted,omitempty"`
+	IsB2CTenant                 bool              `json:"isB2CTenant,omitempty"`
+	DomainName                  string            `json:"domainName,omitempty"`
+	AzureADGraphResourceBase    string            `json:"azureADGraphResourceBase,omitempty"`
+	CloudDisplayName            string            `json:"cloudDisplayName,omitempty"`
+	GrantType                   string            `json:"grantType,omitempty"`
+	BeforeProvisioningRule      interface{}       `json:"beforeProvisioningRule,omitempty"`
+	Md5                         string            `json:"md5,omitempty"`
+	Username                    interface{}       `json:"username,omitempty"`
+	ForestSettings              []*ForestSettings `json:"forestSettings,omitempty"`
+	IQServicePassword           interface{}       `json:"IQServicePassword,omitempty"`
+	DomainSettings              []*DomainSettings `json:"domainSettings,omitempty"`
+	SearchDNs                   []*SearchDNs      `json:"searchDNs,omitempty"`
+}
+
+type ForestSettings struct {
+	Password          string      `json:"password,omitempty"`
+	GcServer          string      `json:"gcServer,omitempty"`
+	ForestName        interface{} `json:"forestName,omitempty"`
+	User              string      `json:"user,omitempty"`
+	UseSSL            bool        `json:"useSSL,omitempty"`
+	AuthorizationType string      `json:"authorizationType,omitempty"`
+}
+
+type DomainSettings struct {
+	Password          string   `json:"password,omitempty"`
+	ForestName        string   `json:"forestName,omitempty"`
+	Port              string   `json:"port,omitempty"`
+	User              string   `json:"user,omitempty"`
+	UseSSL            bool     `json:"useSSL,omitempty"`
+	AuthorizationType string   `json:"authorizationType,omitempty"`
+	DomainDN          string   `json:"domainDN,omitempty"`
+	Servers           []string `json:"servers,omitempty"`
+}
+
+type SearchDNs struct {
+	GroupMembershipSearchDN string `json:"groupMembershipSearchDN,omitempty"`
+	SearchDN                string `json:"searchDN,omitempty"`
+	GroupMemberFilterString string `json:"groupMemberFilterString,omitempty"`
+	SearchScope             string `json:"searchScope,omitempty"`
+	PrimaryGroupSearchDN    string `json:"primaryGroupSearchDN,omitempty"`
+	IterateSearchFilter     string `json:"iterateSearchFilter,omitempty"`
 }
