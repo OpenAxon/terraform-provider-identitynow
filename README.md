@@ -50,14 +50,23 @@ resource "identitynow_source" "source_azure_ad_ag1" {
 ```
 
 # Development
-Edit the Go files that make up the provider, and rebuild/reload the provider:
+Edit the Go files that make up the provider, and rebuild/reload the provider.
 ```bash
-go build -o terraform-provider-identitynow
+./build.sh
 terraform init
-``` 
+```
+ 
+In Terraform 13, the convenience of looking in the current working directory for the provider binary is no longer supported. Instead, you must build the binary and place it in a specific path structure:
+```
+~/.terraform.d/plugins/registry.terraform.fake/axon/identitynow/0.1.0/darwin_amd64/terraform-provider-identitynow_v0.1.0
+```
+The path structure format adheres to strict conventions. When we reach the point of publishing the provider to registry.terraform.io, we can execute the following to update the provider on all resources in TF state:
+```
+terraform state replace-provider "registry.terraform.fake/axon/identitynow" "registry.terraform.io/axon/identitynow"
+```
 
 ### Debugging
-To debug the provider logic, set `TF_LOG=TRACE`.
+To debug the provider logic, set `TF_LOG=TRACE`. All other log levels are not supported. So `unset TF_LOG` to disable trace logging.
 
 # Set up secrets in Vault
 Execute the following while logged into Vault with the all-powerful root token. We want to do minimal steps with the root token, then create a new, limited token that we will use from Terraform.
