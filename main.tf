@@ -7,7 +7,7 @@ data "vault_generic_secret" "iqservice_client" {
 }
 
 resource "identitynow_source" "source_azure_ad_ag1" {
-  name = "Azure AD product (usgov)"
+  name = "Product platform, Azure portal, US Gov"
   description = "The Azure Active Directory connector created by terraform for the tenant with all US gov subscriptions on the product side."
   connector = "azure-active-directory"
 
@@ -34,7 +34,7 @@ resource "identitynow_source" "source_azure_ad_ag1" {
   }
 }
 resource "identitynow_source" "source_on-prem_ad_ag1" {
-  name = "On-prem AD product (usgov)"
+  name = "Product platform, Active Directory, AG1"
   description = "The on-prem Active Directory connector created by terraform for the tenant with all US gov subscriptions on the product side."
   connector = "active-directory"
 
