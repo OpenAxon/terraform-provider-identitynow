@@ -30,30 +30,15 @@ func flattenSourceConnectorAttributes(in *ConnectorAttributes, p []interface{}) 
 	obj["iq_service_password"] = in.IQServicePassword
 
 	if in.DomainSettings != nil {
-		v, ok := obj["domain_settings"].([]interface{})
-		if !ok {
-			v = []interface{}{}
-		}
-
-		obj["domain_settings"] = flattenSourceDomainSettings(in.DomainSettings, v)
+		obj["domain_settings"] = flattenSourceDomainSettings(in.DomainSettings)
 	}
 
 	if in.ForestSettings != nil {
-		v, ok := obj["forest_settings"].([]interface{})
-		if !ok {
-			v = []interface{}{}
-		}
-
-		obj["forest_settings"] = flattenSourceForestSettings(in.ForestSettings, v)
+		obj["forest_settings"] = flattenSourceForestSettings(in.ForestSettings)
 	}
 
 	if in.SearchDNs != nil {
-		v, ok := obj["search_dns"].([]interface{})
-		if !ok {
-			v = []interface{}{}
-		}
-
-		obj["search_dns"] = flattenSourceSearchDNs(in.SearchDNs, v)
+		obj["search_dns"] = flattenSourceSearchDNs(in.SearchDNs)
 	}
 
 	return []interface{}{obj}

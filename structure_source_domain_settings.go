@@ -2,7 +2,7 @@ package main
 
 // Flatteners
 
-func flattenSourceDomainSettings(in []*DomainSettings, p []interface{}) []interface{} {
+func flattenSourceDomainSettings(in []*DomainSettings) []interface{} {
 	if in == nil {
 		return []interface{}{}
 	}

@@ -2,7 +2,7 @@ package main
 
 // Flatteners
 
-func flattenSourceSearchDNs(in []*SearchDNs, p []interface{}) []interface{} {
+func flattenSourceSearchDNs(in []*SearchDNs) []interface{} {
 	if in == nil {
 		return []interface{}{}
 	}

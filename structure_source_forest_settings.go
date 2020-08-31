@@ -2,7 +2,7 @@ package main
 
 // Flatteners
 
-func flattenSourceForestSettings(in []*ForestSettings, p []interface{}) []interface{} {
+func flattenSourceForestSettings(in []*ForestSettings) []interface{} {
 	if in == nil {
 		return []interface{}{}
 	}

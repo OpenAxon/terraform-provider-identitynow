@@ -107,6 +107,18 @@ vault token lookup -accessor mBBuqHL5vYpwvgclwnXR8vID
 ```
 Place the sensitive token value into ~/.vault-token, so that it will be used by Terraform and the Vault CLI for authenticating. This type of token will eventually be linked to LDAP auth of each user. For now, we'll just pass this one around.
 
+# Testing the Provider
+
+In order to test the provider, you can simply run `make test`.
+```sh
+$ make test
+```
+In order to run the full suite of Acceptance test identitynow url, client id and secret, owner name and id, cluster name and id are needed to make the API call to create IdentityNow source for test.
+
+To run acceptance tests, first you need to update the `script/gotestacc_vars.sh` with above variables values and then simply run `make testacc`.
+```sh
+$ make testacc
+```
 
 
 
