@@ -38,7 +38,7 @@ func TestFlattenSourceOwner(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		output := flattenSourceOwner(tc.Input, tc.ExpectedOutput)
+		output := flattenSourceOwner(tc.Input, []interface{}{})
 		if !reflect.DeepEqual(output, tc.ExpectedOutput) {
 			t.Fatalf("Unexpected output from flattener.\nExpected: %#v\nGiven:    %#v",
 				tc.ExpectedOutput, output)

@@ -26,9 +26,6 @@ func init() {
 		IQServiceUser:            "iq-service-user-value",
 		IQServiceHost:            "iq-service-host.com",
 		UseTLSForIQService:       true,
-		DomainSettings:           testDomainSettingsConf,
-		ForestSettings:           testForestSettingsConf,
-		SearchDNs:                testSearchDNsConf,
 	}
 	testConnectorAttributesInterface = []interface{}{
 		map[string]interface{}{
@@ -46,9 +43,6 @@ func init() {
 			"iq_service_password":          "iq-service-password-value",
 			"iq_service_user":              "iq-service-user-value",
 			"iq_service_host":              "iq-service-host.com",
-			"domain_settings":              testDomainSettingsInterface,
-			"forest_settings":              testForestSettingsInterface,
-			"search_dns":                   testSearchDNsInterface,
 		},
 	}
 }
@@ -66,7 +60,7 @@ func TestFlattenSourceConnectorAttributes(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		output := flattenSourceConnectorAttributes(tc.Input, tc.ExpectedOutput)
+		output := flattenSourceConnectorAttributes(tc.Input, []interface{}{})
 		if !reflect.DeepEqual(output, tc.ExpectedOutput) {
 			t.Fatalf("Unexpected output from flattener.\nExpected: %#v\nGiven:    %#v",
 				tc.ExpectedOutput, output)

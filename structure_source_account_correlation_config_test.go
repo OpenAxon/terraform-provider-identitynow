@@ -38,7 +38,7 @@ func TestFlattenSourceAccountCorrelationConfig(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		output := flattenSourceAccountCorrelationConfig(tc.Input, tc.ExpectedOutput)
+		output := flattenSourceAccountCorrelationConfig(tc.Input, []interface{}{})
 		if !reflect.DeepEqual(output, tc.ExpectedOutput) {
 			t.Fatalf("Unexpected output from flattener.\nExpected: %#v\nGiven:    %#v",
 				tc.ExpectedOutput, output)

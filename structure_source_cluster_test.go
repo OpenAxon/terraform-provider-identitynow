@@ -38,7 +38,7 @@ func TestFlattenSourceCluster(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		output := flattenSourceCluster(tc.Input, tc.ExpectedOutput)
+		output := flattenSourceCluster(tc.Input, []interface{}{})
 		if !reflect.DeepEqual(output, tc.ExpectedOutput) {
 			t.Fatalf("Unexpected output from flattener.\nExpected: %#v\nGiven:    %#v",
 				tc.ExpectedOutput, output)

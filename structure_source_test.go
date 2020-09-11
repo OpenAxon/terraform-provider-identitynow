@@ -14,26 +14,18 @@ var (
 
 func init() {
 	testSourceConf = &Source{
-		Name:                     "foo",
-		Description:              "test description",
-		Connector:                "active-directory",
-		DeleteThreshold:          10,
-		Authoritative:            false,
-		Owner:                    testOwnerConf,
-		Cluster:                  testClusterConf,
-		AccountCorrelationConfig: testAccountCorrelationConfigConf,
-		Schemas:                  testSchemasConf,
+		Name:            "foo",
+		Description:     "test description",
+		Connector:       "active-directory",
+		DeleteThreshold: 10,
+		Authoritative:   false,
 	}
 	testSourceInterface = map[string]interface{}{
-		"name":                       "foo",
-		"description":                "test description",
-		"connector":                  "active-directory",
-		"delete_threshold":           10,
-		"authoritative":              false,
-		"owner":                      testOwnerInterface,
-		"cluster":                    testClusterInterface,
-		"account_correlation_config": testAccountCorrelationConfigInterface,
-		"schemas":                    testSchemasInterface,
+		"name":             "foo",
+		"description":      "test description",
+		"connector":        "active-directory",
+		"delete_threshold": 10,
+		"authoritative":    false,
 	}
 }
 

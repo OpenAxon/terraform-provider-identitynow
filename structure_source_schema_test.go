@@ -40,7 +40,7 @@ func TestFlattenSourceSchemas(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		output := flattenSourceSchema(tc.Input, tc.ExpectedOutput)
+		output := flattenSourceSchema(tc.Input, []interface{}{})
 		if !reflect.DeepEqual(output, tc.ExpectedOutput) {
 			t.Fatalf("Unexpected output from flattener.\nExpected: %#v\nGiven:    %#v",
 				tc.ExpectedOutput, output)
