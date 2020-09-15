@@ -102,6 +102,16 @@ func sourceConnectorAttributesFields() map[string]*schema.Schema {
 				Schema: sourceSearchDNsFields(),
 			},
 		},
+		"authorization_type": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Authorization type (none, simple, strong)",
+		},
+		"api_version": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Azure API version to use for Azure Active Directory connector",
+		},
 	}
 
 	return s

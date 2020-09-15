@@ -28,6 +28,8 @@ func flattenSourceConnectorAttributes(in *ConnectorAttributes, p []interface{}) 
 	obj["use_tls_for_iq_service"] = in.UseTLSForIQService
 	obj["iq_service_user"] = in.IQServiceUser
 	obj["iq_service_password"] = in.IQServicePassword
+	obj["authorization_type"] = in.AuthorizationType
+	obj["api_version"] = in.ApiVersion
 
 	if in.DomainSettings != nil {
 		obj["domain_settings"] = flattenSourceDomainSettings(in.DomainSettings)
@@ -69,6 +71,8 @@ func expandSourceConnectorAttributes(p []interface{}) *ConnectorAttributes {
 	obj.UseTLSForIQService = in["use_tls_for_iq_service"].(bool)
 	obj.IQServiceUser = in["iq_service_user"].(string)
 	obj.IQServicePassword = in["iq_service_password"].(string)
+	obj.AuthorizationType = in["authorization_type"].(string)
+	obj.ApiVersion = in["api_version"].(string)
 
 	if v, ok := in["forest_settings"].([]interface{}); ok && len(v) > 0 {
 		obj.ForestSettings = expandSourceForestSettings(v)

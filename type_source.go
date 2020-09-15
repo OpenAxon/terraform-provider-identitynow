@@ -117,6 +117,8 @@ type ConnectorAttributes struct {
 	IQServicePassword           interface{}       `json:"IQServicePassword,omitempty"`
 	DomainSettings              []*DomainSettings `json:"domainSettings,omitempty"`
 	SearchDNs                   []*SearchDNs      `json:"searchDNs,omitempty"`
+	AuthorizationType           string            `json:"authorizationType,omitempty"`
+	ApiVersion                  string            `json:"api-version,omitempty"`
 }
 
 type ForestSettings struct {

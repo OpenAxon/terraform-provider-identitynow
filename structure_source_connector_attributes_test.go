@@ -26,6 +26,8 @@ func init() {
 		IQServiceUser:            "iq-service-user-value",
 		IQServiceHost:            "iq-service-host.com",
 		UseTLSForIQService:       true,
+		AuthorizationType:        "simple",
+		ApiVersion:               "1.6",
 	}
 	testConnectorAttributesInterface = []interface{}{
 		map[string]interface{}{
@@ -43,6 +45,8 @@ func init() {
 			"iq_service_password":          "iq-service-password-value",
 			"iq_service_user":              "iq-service-user-value",
 			"iq_service_host":              "iq-service-host.com",
+			"authorization_type":           "simple",
+			"api_version":                  "1.6",
 		},
 	}
 }
