@@ -27,6 +27,11 @@ func dataSourceSource() *schema.Resource {
 				Computed:    true,
 				Description: "Source description",
 			},
+			"connector": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Source connector type",
+			},
 			"delete_threshold": {
 				Type:     schema.TypeInt,
 				Computed: true,

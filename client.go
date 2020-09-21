@@ -141,6 +141,110 @@ func (c *Client) DeleteSource(ctx context.Context, source *Source) error {
 	return nil
 }
 
+func (c *Client) GetAccessProfile(ctx context.Context, id string) (*AccessProfile, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, id), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := AccessProfile{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Access Profile get response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) GetSourceEntitlements(ctx context.Context, id string) (*SourceEntitlements, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/entitlement/list?CISApplicationId=%s", c.BaseURL, id), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := SourceEntitlements{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Source Entitlements get response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessProfile) (*AccessProfile, error) {
+	body, err := json.Marshal(&accessProfile)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v2/access-profiles", c.BaseURL), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := AccessProfile{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Access Profile creation response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessProfile) (*AccessProfile, error) {
+	body, err := json.Marshal(&accessProfile)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, accessProfile.ID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Creation of new http request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := AccessProfile{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Access Profile creation response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) DeleteAccessProfile(ctx context.Context, accessProfile *AccessProfile) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, accessProfile.ID), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed:%+v\n", err)
+		return err
+	}
+
+	req = req.WithContext(ctx)
+
+	var res interface{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed access profile update response:%+v\n", res)
+		log.Fatal(err)
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")

@@ -39,11 +39,14 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"identitynow_source": resourceSource(),
+			"identitynow_source":         resourceSource(),
+			"identitynow_access_profile": resourceAccessProfile(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"identitynow_source": dataSourceSource(),
+			"identitynow_source":             dataSourceSource(),
+			"identitynow_access_profile":     dataSourceAccessProfile(),
+			"identitynow_source_entitlement": dataSourceSourceEntitlement(),
 		},
 
 		ConfigureFunc: providerConfigure,
