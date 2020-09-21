@@ -25,7 +25,7 @@ func accessProfileFields() map[string]*schema.Schema {
 
 		"source_name": {
 			Type:     schema.TypeString,
-			Optional: true,
+			Computed: true,
 		},
 
 		"owner_id": {
@@ -70,7 +70,7 @@ func accessProfileFields() map[string]*schema.Schema {
 
 		"requestable": {
 			Type:     schema.TypeBool,
-			Optional: true,
+			Computed: true,
 		},
 
 		"revoke_request_approval_schemes": {
