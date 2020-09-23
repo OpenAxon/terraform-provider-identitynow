@@ -12,18 +12,18 @@ var (
 )
 
 func init() {
+	TRUE := true
+	FALSE := false
 	testAccessProfileConf = &AccessProfile{
 		Name:                         "test name",
 		Description:                  "test Description",
 		SourceID:                     1234,
-		SourceName:                   "test source name",
 		OwnerID:                      456,
 		Entitlements:                 []string{"1234", "456"},
-		DeniedCommentsRequired:       false,
-		Disabled:                     true,
-		Protected:                    false,
-		RequestCommentsRequired:      false,
-		Requestable:                  false,
+		DeniedCommentsRequired:       &FALSE,
+		Disabled:                     &TRUE,
+		Protected:                    &FALSE,
+		RequestCommentsRequired:      &FALSE,
 		ApprovalSchemes:              "test",
 		RevokeRequestApprovalSchemes: "test",
 	}
@@ -31,15 +31,13 @@ func init() {
 		"name":                            "test name",
 		"description":                     "test Description",
 		"source_id":                       1234,
-		"source_name":                     "test source name",
 		"owner_id":                        456,
 		"entitlements":                    []interface{}{"1234", "456"},
 		"denied_comments_required":        false,
 		"disabled":                        true,
 		"protected":                       false,
 		"request_comments_required":       false,
-		"requestable":                     false,
-		"approval_schemas":                "test",
+		"approval_schemes":                "test",
 		"revoke_request_approval_schemes": "test",
 	}
 }

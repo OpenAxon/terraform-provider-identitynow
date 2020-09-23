@@ -35,7 +35,7 @@ func accessProfileFields() map[string]*schema.Schema {
 
 		"entitlements": {
 			Type:        schema.TypeList,
-			Required:    true,
+			Optional:    true,
 			Description: "Access Profile Entitlements.",
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
@@ -48,7 +48,7 @@ func accessProfileFields() map[string]*schema.Schema {
 			Description: "Access Profile Denied Comments Required",
 		},
 
-		"approval_schemas": {
+		"approval_schemes": {
 			Type:     schema.TypeString,
 			Optional: true,
 		},

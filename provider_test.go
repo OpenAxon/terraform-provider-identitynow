@@ -39,6 +39,9 @@ func testAccPreCheck(t *testing.T) {
 	if v := os.Getenv("IDENTITYNOW_CLIENT_SECRET"); v == "" {
 		t.Fatal("IDENTITYNOW_CLIENT_SECRET must be set for acceptance tests")
 	}
+	if v := os.Getenv("IDENTITYNOW_EXTERNAL_OWNER_ID"); v == "" {
+		t.Fatal("IDENTITYNOW_EXTERNAL_OWNER_ID must be set for acceptance tests")
+	}
 	if v := os.Getenv("IDENTITYNOW_OWNER_ID"); v == "" {
 		t.Fatal("IDENTITYNOW_OWNER_ID must be set for acceptance tests")
 	}

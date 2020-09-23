@@ -24,7 +24,7 @@ func flattenAccessProfile(d *schema.ResourceData, in *AccessProfile) error {
 	d.Set("protected", in.Protected)
 	d.Set("request_comments_required", in.RequestCommentsRequired)
 	d.Set("requestable", in.Requestable)
-	d.Set("approval_schemas", in.ApprovalSchemes)
+	d.Set("approval_schemes", in.ApprovalSchemes)
 	d.Set("revoke_request_approval_schemes", in.RevokeRequestApprovalSchemes)
 	return nil
 }
@@ -36,14 +36,10 @@ func expandAccessProfile(in *schema.ResourceData) (*AccessProfile, error) {
 	if in == nil {
 		return nil, fmt.Errorf("[ERROR] Expanding Access Profile: Schema Resource data is nil")
 	}
-	if v := in.Id(); len(v) > 0 {
-		obj.ID = v
-	}
 
 	obj.Name = in.Get("name").(string)
 	obj.Description = in.Get("description").(string)
-	obj.SourceName = in.Get("source_name").(string)
-	obj.ApprovalSchemes = in.Get("approval_schemas").(string)
+	obj.ApprovalSchemes = in.Get("approval_schemes").(string)
 	obj.RevokeRequestApprovalSchemes = in.Get("revoke_request_approval_schemes").(string)
 
 	if v, ok := in.Get("source_id").(int); ok {
@@ -59,23 +55,19 @@ func expandAccessProfile(in *schema.ResourceData) (*AccessProfile, error) {
 	}
 
 	if v, ok := in.Get("denied_comments_required").(bool); ok {
-		obj.DeniedCommentsRequired = v
+		obj.DeniedCommentsRequired = &v
 	}
 
 	if v, ok := in.Get("disabled").(bool); ok {
-		obj.Disabled = v
+		obj.Disabled = &v
 	}
 
 	if v, ok := in.Get("protected").(bool); ok {
-		obj.Protected = v
+		obj.Protected = &v
 	}
 
 	if v, ok := in.Get("request_comments_required").(bool); ok {
-		obj.RequestCommentsRequired = v
-	}
-
-	if v, ok := in.Get("requestable").(bool); ok {
-		obj.Requestable = v
+		obj.RequestCommentsRequired = &v
 	}
 
 	return &obj, nil

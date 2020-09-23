@@ -203,12 +203,12 @@ func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessP
 	return &res, nil
 }
 
-func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessProfile) (*AccessProfile, error) {
+func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessProfile, id string) (*AccessProfile, error) {
 	body, err := json.Marshal(&accessProfile)
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, accessProfile.ID), bytes.NewBuffer(body))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, id), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
@@ -245,9 +245,119 @@ func (c *Client) DeleteAccessProfile(ctx context.Context, accessProfile *AccessP
 	return nil
 }
 
+func (c *Client) GetRole(ctx context.Context, id string) (*Role, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/role/get?id=%s", c.BaseURL, id), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := Role{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Role get response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
+	body, err := json.Marshal(&role)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/cc/api/role/create", c.BaseURL), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("New request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := Role{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed source creation response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) UpdateRole(ctx context.Context, role *Role) (*Role, error) {
+	body, err := json.Marshal(&role)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/cc/api/role/update/?id=%s", c.BaseURL, role.ID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Creation of new http request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := Role{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Role updating response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
+	body, err := json.Marshal(&role)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/cc/api/role/delete/?id=%s", c.BaseURL, role.ID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Creation of new http request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := Role{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Role deletion response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) GetIdentity(ctx context.Context, alias string) (*Identity, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v2/identities/%s", c.BaseURL, alias), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	res := Identity{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Identity get response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 func (c *Client) sendRequest(req *http.Request, v interface{}) error {
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	req.Header.Set("Accept", "application/json; charset=utf-8")
+	if req.Method != "GET" {
+		req.Header.Set("Content-Type", "application/json; charset=utf-8")
+		req.Header.Set("Accept", "application/json; charset=utf-8")
+	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.accessToken))
 
 	res, err := c.HTTPClient.Do(req)

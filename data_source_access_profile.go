@@ -59,7 +59,7 @@ func dataSourceAccessProfile() *schema.Resource {
 				Description: "Access Profile Denied Comments Required",
 			},
 
-			"approval_schemas": {
+			"approval_schemes": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},

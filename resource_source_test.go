@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	ownerId := os.Getenv("IDENTITYNOW_OWNER_ID")
+	ownerId := os.Getenv("IDENTITYNOW_EXTERNAL_OWNER_ID")
 	ownerName := os.Getenv("IDENTITYNOW_OWNER_NAME")
 	clusterId := os.Getenv("IDENTITYNOW_CLUSTER_ID")
 	clusterName := os.Getenv("IDENTITYNOW_CLUSTER_NAME")
