@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -46,6 +48,8 @@ func (c *Client) GetToken(ctx context.Context) error {
 		return err
 	}
 
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	res := OauthToken{}
@@ -65,6 +69,8 @@ func (c *Client) GetSource(ctx context.Context, id string) (*Source, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
 
@@ -86,6 +92,9 @@ func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, err
 		log.Printf("New request failed:%+v\n", err)
 		return nil, err
 	}
+
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
 
@@ -110,6 +119,9 @@ func (c *Client) UpdateSource(ctx context.Context, source *Source) (*Source, err
 		return nil, err
 	}
 
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	res := Source{}
@@ -128,6 +140,8 @@ func (c *Client) DeleteSource(ctx context.Context, source *Source) error {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return err
 	}
+
+	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
 
@@ -191,6 +205,9 @@ func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessP
 		return nil, err
 	}
 
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	res := AccessProfile{}
@@ -214,6 +231,9 @@ func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessP
 		return nil, err
 	}
 
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	res := AccessProfile{}
@@ -233,6 +253,8 @@ func (c *Client) DeleteAccessProfile(ctx context.Context, accessProfile *AccessP
 		return err
 	}
 
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	var res interface{}
@@ -251,6 +273,8 @@ func (c *Client) GetRole(ctx context.Context, id string) (*Role, error) {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
 	}
+
+	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
 
@@ -276,6 +300,9 @@ func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
 		return nil, err
 	}
 
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	res := Role{}
@@ -298,6 +325,9 @@ func (c *Client) UpdateRole(ctx context.Context, role *Role) (*Role, error) {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
 	}
+
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
 
@@ -322,6 +352,8 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 		return nil, err
 	}
 
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	res := Role{}
@@ -341,6 +373,8 @@ func (c *Client) GetIdentity(ctx context.Context, alias string) (*Identity, erro
 		return nil, err
 	}
 
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
 	req = req.WithContext(ctx)
 
 	res := Identity{}
@@ -353,11 +387,52 @@ func (c *Client) GetIdentity(ctx context.Context, alias string) (*Identity, erro
 	return &res, nil
 }
 
-func (c *Client) sendRequest(req *http.Request, v interface{}) error {
-	if req.Method != "GET" {
-		req.Header.Set("Content-Type", "application/json; charset=utf-8")
-		req.Header.Set("Accept", "application/json; charset=utf-8")
+func (c *Client) GetAccountAggregationSchedule(ctx context.Context, id string) (*AccountAggregationSchedule, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/source/getAggregationSchedules/%s", c.BaseURL, id), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
 	}
+
+	req = req.WithContext(ctx)
+
+	res := []AccountAggregationSchedule{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Schedule Account Aggregation get response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res[0], nil
+}
+
+func (c *Client) ManageAccountAggregationSchedule(ctx context.Context, scheduleAggregation *AccountAggregationSchedule, enable bool) (*AccountAggregationSchedule, error) {
+
+	endpoint := fmt.Sprintf("%s/cc/api/source/scheduleAggregation/%s", c.BaseURL, scheduleAggregation.SourceID)
+	data := url.Values{}
+	data.Set("enable", fmt.Sprintf("%t", enable))
+	data.Set("cronExp", scheduleAggregation.CronExpressions[0])
+	req, err := http.NewRequest("POST", endpoint, strings.NewReader(data.Encode()))
+	if err != nil {
+		log.Printf("New request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+
+	req = req.WithContext(ctx)
+
+	res := AccountAggregationSchedule{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed schedule account aggregation response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.accessToken))
 
 	res, err := c.HTTPClient.Do(req)

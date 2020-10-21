@@ -60,7 +60,7 @@ func accessProfileFields() map[string]*schema.Schema {
 
 		"protected": {
 			Type:     schema.TypeBool,
-			Optional: true,
+			Computed: true,
 		},
 
 		"request_comments_required": {

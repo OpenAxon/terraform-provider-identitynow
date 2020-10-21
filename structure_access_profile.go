@@ -62,10 +62,6 @@ func expandAccessProfile(in *schema.ResourceData) (*AccessProfile, error) {
 		obj.Disabled = &v
 	}
 
-	if v, ok := in.Get("protected").(bool); ok {
-		obj.Protected = &v
-	}
-
 	if v, ok := in.Get("request_comments_required").(bool); ok {
 		obj.RequestCommentsRequired = &v
 	}
