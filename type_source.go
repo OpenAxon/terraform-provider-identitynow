@@ -119,6 +119,13 @@ type ConnectorAttributes struct {
 	SearchDNs                   []*SearchDNs      `json:"searchDNs,omitempty"`
 	AuthorizationType           string            `json:"authorizationType,omitempty"`
 	ApiVersion                  string            `json:"api-version,omitempty"`
+	ExcludeAWSAccountIdList     string            `json:"excludeAWSAccountIdList,omitempty"`
+	IncludeAWSAccountIdList     string            `json:"includeAWSAccountIdList,omitempty"`
+	Kid                         string            `json:"kid,omitempty"`
+	Secret                      string            `json:"secret,omitempty"`
+	ConnectorClass              string            `json:"connectorClass,omitempty"`
+	ManageAllAccountsIAMData    bool              `json:"manageAllAccountsIAMData,omitempty"`
+	RoleName                    string            `json:"roleName,omitempty"`
 }
 
 type ForestSettings struct {

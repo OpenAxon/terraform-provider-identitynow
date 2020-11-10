@@ -112,6 +112,41 @@ func sourceConnectorAttributesFields() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "Azure API version to use for Azure Active Directory connector",
 		},
+		"exclude_aws_account_id_list": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "List of AWS account ids separated with comma to exclude from aggregation.",
+		},
+		"include_aws_account_id_list": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "List of AWS account ids separated with comma to include in aggregation.",
+		},
+		"kid": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Access Key ID for AWS IAM service account.",
+		},
+		"secret": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Sensitive:   true,
+			Description: "Secret Access Key for AWS IAM service account.",
+		},
+		"role_name": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Secret Access Key for AWS IAM service account.",
+		},
+		"manage_all_accounts_iam_data": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "True if IAM source is managing all iam users.",
+		},
+		"connector_class": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
 	}
 
 	return s

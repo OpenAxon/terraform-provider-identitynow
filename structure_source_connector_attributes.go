@@ -30,6 +30,13 @@ func flattenSourceConnectorAttributes(in *ConnectorAttributes, p []interface{}) 
 	obj["iq_service_password"] = in.IQServicePassword
 	obj["authorization_type"] = in.AuthorizationType
 	obj["api_version"] = in.ApiVersion
+	obj["exclude_aws_account_id_list"] = in.ExcludeAWSAccountIdList
+	obj["include_aws_account_id_list"] = in.IncludeAWSAccountIdList
+	obj["kid"] = in.Kid
+	obj["secret"] = in.Secret
+	obj["role_name"] = in.RoleName
+	obj["manage_all_accounts_iam_data"] = in.ManageAllAccountsIAMData
+	obj["connector_class"] = in.ConnectorClass
 
 	if in.DomainSettings != nil {
 		obj["domain_settings"] = flattenSourceDomainSettings(in.DomainSettings)
@@ -73,6 +80,13 @@ func expandSourceConnectorAttributes(p []interface{}) *ConnectorAttributes {
 	obj.IQServicePassword = in["iq_service_password"].(string)
 	obj.AuthorizationType = in["authorization_type"].(string)
 	obj.ApiVersion = in["api_version"].(string)
+	obj.ExcludeAWSAccountIdList = in["exclude_aws_account_id_list"].(string)
+	obj.IncludeAWSAccountIdList = in["include_aws_account_id_list"].(string)
+	obj.Kid = in["kid"].(string)
+	obj.Secret = in["secret"].(string)
+	obj.RoleName = in["role_name"].(string)
+	obj.ManageAllAccountsIAMData = in["manage_all_accounts_iam_data"].(bool)
+	obj.ConnectorClass = in["connector_class"].(string)
 
 	if v, ok := in["forest_settings"].([]interface{}); ok && len(v) > 0 {
 		obj.ForestSettings = expandSourceForestSettings(v)

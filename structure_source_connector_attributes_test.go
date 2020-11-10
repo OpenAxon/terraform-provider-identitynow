@@ -28,6 +28,13 @@ func init() {
 		UseTLSForIQService:       true,
 		AuthorizationType:        "simple",
 		ApiVersion:               "1.6",
+		ExcludeAWSAccountIdList:  "123456789,987654321",
+		IncludeAWSAccountIdList:  "234567890",
+		Kid:                      "kid",
+		Secret:                   "secret",
+		RoleName:                 "role-name-123",
+		ManageAllAccountsIAMData: true,
+		ConnectorClass:           "openconnector.connector.aws.AWSConnectorSDK",
 	}
 	testConnectorAttributesInterface = []interface{}{
 		map[string]interface{}{
@@ -47,6 +54,13 @@ func init() {
 			"iq_service_host":              "iq-service-host.com",
 			"authorization_type":           "simple",
 			"api_version":                  "1.6",
+			"exclude_aws_account_id_list":  "123456789,987654321",
+			"include_aws_account_id_list":  "234567890",
+			"kid":                          "kid",
+			"secret":                       "secret",
+			"role_name":                    "role-name-123",
+			"manage_all_accounts_iam_data": true,
+			"connector_class":              "openconnector.connector.aws.AWSConnectorSDK",
 		},
 	}
 }
