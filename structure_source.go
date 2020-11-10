@@ -64,6 +64,15 @@ func flattenSource(d *schema.ResourceData, in *Source) error {
 		d.Set("schemas", flattenSourceSchema(in.Schemas, v))
 	}
 
+	if in.ManagementWorkgroup != nil {
+		v, ok := d.Get("ManagementWorkgroup").([]interface{})
+		if !ok {
+			v = []interface{}{}
+		}
+
+		d.Set("ManagementWorkgroup", flattenSourceManagementWorkgroup(in.ManagementWorkgroup, v))
+	}
+
 	return nil
 }
 
@@ -108,6 +117,10 @@ func expandSource(in *schema.ResourceData) (*Source, error) {
 
 	if v, ok := in.Get("connector_attributes").([]interface{}); ok && len(v) > 0 {
 		obj.ConnectorAttributes = expandSourceConnectorAttributes(v)
+	}
+
+	if v, ok := in.Get("management_workgroup").([]interface{}); ok && len(v) > 0 {
+		obj.ManagementWorkgroup = expandSourceManagementWorkgroup(v)
 	}
 
 	return &obj, nil

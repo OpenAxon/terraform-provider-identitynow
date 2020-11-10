@@ -26,7 +26,7 @@ type Source struct {
 	ConnectorAttributes *ConnectorAttributes `json:"connectorAttributes,omitempty"`
 	DeleteThreshold     int                  `json:"deleteThreshold"`
 	Authoritative       bool                 `json:"authoritative"`
-	ManagementWorkgroup interface{}          `json:"managementWorkgroup,omitempty"`
+	ManagementWorkgroup *ManagementWorkgroup `json:"managementWorkgroup,omitempty"`
 	ID                  string               `json:"id,omitempty"`
 	Name                string               `json:"name"`
 	Created             time.Time            `json:"created,omitempty"`
@@ -148,4 +148,10 @@ type SearchDNs struct {
 	SearchScope             string `json:"searchScope,omitempty"`
 	PrimaryGroupSearchDN    string `json:"primaryGroupSearchDN,omitempty"`
 	IterateSearchFilter     string `json:"iterateSearchFilter,omitempty"`
+}
+
+type ManagementWorkgroup struct {
+	Type string `json:"type,omitempty"`
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
 }

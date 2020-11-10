@@ -72,6 +72,13 @@ func sourceFields() map[string]*schema.Schema {
 				Schema: sourceConnectorAttributesFields(),
 			},
 		},
+		"management_workgroup": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: sourceManagementWorkgroupFields(),
+			},
+		},
 	}
 
 	//for k, v := range commonAnnotationLabelFields() {
