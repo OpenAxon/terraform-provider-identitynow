@@ -37,6 +37,7 @@ func flattenSourceConnectorAttributes(in *ConnectorAttributes, p []interface{}) 
 	obj["role_name"] = in.RoleName
 	obj["manage_all_accounts_iam_data"] = in.ManageAllAccountsIAMData
 	obj["connector_class"] = in.ConnectorClass
+	obj["encrypted"] = in.Encrypted
 
 	if in.DomainSettings != nil {
 		obj["domain_settings"] = flattenSourceDomainSettings(in.DomainSettings)
@@ -87,6 +88,7 @@ func expandSourceConnectorAttributes(p []interface{}) *ConnectorAttributes {
 	obj.RoleName = in["role_name"].(string)
 	obj.ManageAllAccountsIAMData = in["manage_all_accounts_iam_data"].(bool)
 	obj.ConnectorClass = in["connector_class"].(string)
+	obj.Encrypted = in["encrypted"].(string)
 
 	if v, ok := in["forest_settings"].([]interface{}); ok && len(v) > 0 {
 		obj.ForestSettings = expandSourceForestSettings(v)

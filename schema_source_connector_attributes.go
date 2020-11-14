@@ -147,6 +147,10 @@ func sourceConnectorAttributesFields() map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Optional: true,
 		},
+		"encrypted": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
 	}
 
 	return s

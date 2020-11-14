@@ -35,6 +35,7 @@ func init() {
 		RoleName:                 "role-name-123",
 		ManageAllAccountsIAMData: true,
 		ConnectorClass:           "openconnector.connector.aws.AWSConnectorSDK",
+		Encrypted:                "test",
 	}
 	testConnectorAttributesInterface = []interface{}{
 		map[string]interface{}{
@@ -61,6 +62,7 @@ func init() {
 			"role_name":                    "role-name-123",
 			"manage_all_accounts_iam_data": true,
 			"connector_class":              "openconnector.connector.aws.AWSConnectorSDK",
+			"encrypted":                    "test",
 		},
 	}
 }

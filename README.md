@@ -60,6 +60,8 @@ To run acceptance tests, first you need to update the `script/gotestacc_vars.sh`
 $ make testacc
 ```
 
+Note: Due to a bug in IdentityNow, Encrypted field in ConnectorAttributes block cannot be left null.
+
 
 
 

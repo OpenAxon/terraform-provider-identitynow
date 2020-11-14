@@ -14,6 +14,10 @@ func resourceSource() *schema.Resource {
 		Update: resourceSourceUpdate,
 		Delete: resourceSourceDelete,
 
+		Importer: &schema.ResourceImporter{
+			State: resourceSourceImport,
+		},
+
 		Schema: sourceFields(),
 	}
 }
