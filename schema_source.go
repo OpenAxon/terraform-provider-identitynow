@@ -79,6 +79,13 @@ func sourceFields() map[string]*schema.Schema {
 				Schema: sourceManagementWorkgroupFields(),
 			},
 		},
+		"password_policies": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: sourcePasswordPoliciesFields(),
+			},
+		},
 	}
 
 	//for k, v := range commonAnnotationLabelFields() {

@@ -14,23 +14,19 @@ type Source struct {
 	ManagerCorrelationRule    interface{}               `json:"managerCorrelationRule,omitempty"`
 	BeforeProvisioningRule    interface{}               `json:"beforeProvisioningRule,omitempty"`
 	Schemas                   []*Schema                 `json:"schemas,omitempty"`
-	PasswordPolicies          []struct {
-		Type string `json:"type"`
-		ID   string `json:"id"`
-		Name string `json:"name"`
-	} `json:"passwordPolicies,omitempty"`
-	Features            []string             `json:"features,omitempty"`
-	Type                string               `json:"type,omitempty"`
-	Connector           string               `json:"connector"`
-	ConnectorClass      string               `json:"connectorClass,omitempty"`
-	ConnectorAttributes *ConnectorAttributes `json:"connectorAttributes,omitempty"`
-	DeleteThreshold     int                  `json:"deleteThreshold"`
-	Authoritative       bool                 `json:"authoritative"`
-	ManagementWorkgroup *ManagementWorkgroup `json:"managementWorkgroup,omitempty"`
-	ID                  string               `json:"id,omitempty"`
-	Name                string               `json:"name"`
-	Created             time.Time            `json:"created,omitempty"`
-	Modified            time.Time            `json:"modified,omitempty"`
+	PasswordPolicies          []*SourcePasswordPolicies `json:"passwordPolicies,omitempty"`
+	Features                  []string                  `json:"features,omitempty"`
+	Type                      string                    `json:"type,omitempty"`
+	Connector                 string                    `json:"connector"`
+	ConnectorClass            string                    `json:"connectorClass,omitempty"`
+	ConnectorAttributes       *ConnectorAttributes      `json:"connectorAttributes,omitempty"`
+	DeleteThreshold           int                       `json:"deleteThreshold"`
+	Authoritative             bool                      `json:"authoritative"`
+	ManagementWorkgroup       *ManagementWorkgroup      `json:"managementWorkgroup,omitempty"`
+	ID                        string                    `json:"id,omitempty"`
+	Name                      string                    `json:"name"`
+	Created                   time.Time                 `json:"created,omitempty"`
+	Modified                  time.Time                 `json:"modified,omitempty"`
 }
 
 type Owner struct {
@@ -158,6 +154,12 @@ type SearchDNs struct {
 }
 
 type ManagementWorkgroup struct {
+	Type string `json:"type,omitempty"`
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+type SourcePasswordPolicies struct {
 	Type string `json:"type,omitempty"`
 	ID   string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`

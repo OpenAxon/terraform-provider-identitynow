@@ -73,6 +73,10 @@ func flattenSource(d *schema.ResourceData, in *Source) error {
 		d.Set("ManagementWorkgroup", flattenSourceManagementWorkgroup(in.ManagementWorkgroup, v))
 	}
 
+	if in.PasswordPolicies != nil {
+		d.Set("password_policies", flattenSourcePasswordPolicies(in.PasswordPolicies))
+	}
+
 	return nil
 }
 
@@ -121,6 +125,10 @@ func expandSource(in *schema.ResourceData) (*Source, error) {
 
 	if v, ok := in.Get("management_workgroup").([]interface{}); ok && len(v) > 0 {
 		obj.ManagementWorkgroup = expandSourceManagementWorkgroup(v)
+	}
+
+	if v, ok := in.Get("password_policies").([]interface{}); ok && len(v) > 0 {
+		obj.PasswordPolicies = expandSourcePasswordPolicies(v)
 	}
 
 	return &obj, nil
