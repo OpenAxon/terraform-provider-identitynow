@@ -70,7 +70,7 @@ func flattenSource(d *schema.ResourceData, in *Source) error {
 			v = []interface{}{}
 		}
 
-		d.Set("ManagementWorkgroup", flattenSourceManagementWorkgroup(in.ManagementWorkgroup, v))
+		d.Set("management_workgroup", flattenSourceManagementWorkgroup(in.ManagementWorkgroup, v))
 	}
 
 	if in.PasswordPolicies != nil {
