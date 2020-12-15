@@ -95,6 +95,7 @@ func passwordPolicyFields() map[string]*schema.Schema {
 		},
 		"name": {
 			Type:        schema.TypeString,
+			ForceNew:    true,
 			Required:    true,
 			Description: "Password policy name",
 		},
