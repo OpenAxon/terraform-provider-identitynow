@@ -33,19 +33,12 @@ resource "identitynow_source" "source_azure_ad" {
 ```
 
 # Development
-Edit the Go files that make up the provider, and rebuild/reload the provider.
+Edit the Go files that make up the provider, and rebuild the provider.
 ```bash
 ./build.sh
 ```
- 
-In Terraform 13, the convenience of looking in the current working directory for the provider binary is no longer supported. Instead, you must build the binary and place it in a specific path structure:
-```
-~/.terraform.d/plugins/registry.terraform.fake/axon/identitynow/0.1.0/darwin_amd64/terraform-provider-identitynow_v0.1.0
-```
-The path structure format adheres to strict conventions. When we reach the point of publishing the provider to registry.terraform.io, we can execute the following to update the provider on all resources in TF state:
-```
-terraform state replace-provider "registry.terraform.fake/axon/identitynow" "registry.terraform.io/axon/identitynow"
-```
+This script places the provider binary in an implied local mirror directory ($HOME/.terraform.d/plugins/). See build.sh
+for more comments about ensuring that Terraform uses the local mirror rather than searching the remote registry. 
 
 # Testing the Provider
 
