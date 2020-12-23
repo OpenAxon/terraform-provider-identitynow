@@ -151,6 +151,13 @@ func sourceConnectorAttributesFields() map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Optional: true,
 		},
+		"group_search_dns": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: sourceGroupSearchDNFields(),
+			},
+		},
 	}
 
 	return s

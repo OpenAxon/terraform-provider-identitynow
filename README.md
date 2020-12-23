@@ -1,36 +1,15 @@
-Example declaration of an Azure Active Directory source connector:
-```hcl-terraform
-data "vault_generic_secret" "aad_client" {
-  path = "identitynow/aadclient"
-}
+To find how you can declare resources see [examples folder](./examples/)
 
-resource "identitynow_source" "source_azure_ad" {
-  name = "Azure AD product (usgov)"
-  description = "The Azure Active Directory connector for the tenant with all US gov subscriptions on the product side."
+####Limitations:
+- Sources get created first, but an aggregation has to run before the rest of the plan can complete successfully because the entitlement data lookups will fail until the aggregation has pulled the entitlements from the source into IdentityNow.
 
-  owner {
-    id = "2c91808472ed12345672f1e9ec947b22"
-    name = "john_doe"
-    type = "IDENTITY"
-  }
+- After creating the source, you also need to go into the UI and press the "Test Connection" button to verify the source. This unlocks the ability to apply `identitynow_account_schema_attribute` and `identitynow_account_aggregation_schedule`.
 
-  cluster {
-    id = "2c91808672dd1234567308a1d2d25d35"
-    name = "product-qa"
-  }
+- Password policies can be created, but there is a bug in Idn that makes the association to the source not work. For now, you have to go into the UI and make the association. Sailpoint ticket: https://support.sailpoint.com/hc/en-us/requests/82917
 
-  connector_attributes {
-    grant_type = "CLIENT_CREDENTIALS"
-    client_id = data.vault_generic_secret.aad_client.data["client_id"]
-    client_secret = data.vault_generic_secret.aad_client.data["client_secret"]
-    domain_name = "us1.example.io"
-    ms_graph_resource_base = "https://graph.microsoft.us"
-    ms_graph_token_base = "https://login.microsoftonline.us"
-    azure_ad_graph_resource_base = "https://graph.microsoftazure.us"
-    azure_ad_graph_token_base = "https://login.microsoftonline.us"
-  }
-}
-```
+- Create/enable/disable profiles cannot be managed with Terraform yet. The API for them is highly unusual and not amenable to automation.
+
+- Due to a bug in IdentityNow, Encrypted field in ConnectorAttributes block cannot be left null.
 
 # Development
 Edit the Go files that make up the provider, and rebuild the provider.
@@ -53,7 +32,6 @@ To run acceptance tests, first you need to update the `script/gotestacc_vars.sh`
 $ make testacc
 ```
 
-Note: Due to a bug in IdentityNow, Encrypted field in ConnectorAttributes block cannot be left null.
 
 
 

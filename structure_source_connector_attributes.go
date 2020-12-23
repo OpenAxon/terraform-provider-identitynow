@@ -51,6 +51,10 @@ func flattenSourceConnectorAttributes(in *ConnectorAttributes, p []interface{}) 
 		obj["search_dns"] = flattenSourceSearchDNs(in.SearchDNs)
 	}
 
+	if in.GroupSearchDNs != nil {
+		obj["group_search_dns"] = flattenSourceGroupSearchDNs(in.GroupSearchDNs)
+	}
+
 	return []interface{}{obj}
 
 }
@@ -100,6 +104,10 @@ func expandSourceConnectorAttributes(p []interface{}) *ConnectorAttributes {
 
 	if v, ok := in["search_dns"].([]interface{}); ok && len(v) > 0 {
 		obj.SearchDNs = expandSourceSearchDNs(v)
+	}
+
+	if v, ok := in["group_search_dns"].([]interface{}); ok && len(v) > 0 {
+		obj.GroupSearchDNs = expandSourceGroupSearchDNs(v)
 	}
 
 	return &obj

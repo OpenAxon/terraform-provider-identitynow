@@ -122,6 +122,7 @@ type ConnectorAttributes struct {
 	ConnectorClass              string            `json:"connectorClass,omitempty"`
 	ManageAllAccountsIAMData    bool              `json:"manageAllAccountsIAMData,omitempty"`
 	RoleName                    string            `json:"roleName,omitempty"`
+	GroupSearchDNs              []*GroupSearchDNs `json:"group.searchDNs,omitempty"`
 }
 
 type ForestSettings struct {
@@ -163,4 +164,10 @@ type SourcePasswordPolicies struct {
 	Type string `json:"type,omitempty"`
 	ID   string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
+}
+
+type GroupSearchDNs struct {
+	SearchDN            string `json:"searchDN"`
+	SearchScope         string `json:"searchScope,omitempty"`
+	IterateSearchFilter string `json:"iterateSearchFilter"`
 }
