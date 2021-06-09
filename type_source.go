@@ -65,11 +65,11 @@ type ConnectorAttributes struct {
 	PageSize                string      `json:"pageSize,omitempty"`
 	AuthURL                 interface{} `json:"authURL,omitempty"`
 	SubscribedSkus          []struct {
-		ConsumedUnits int `json:"consumedUnits"`
+		ConsumedUnits float32 `json:"consumedUnits"`
 		PrepaidUnits  struct {
-			Warning   int `json:"warning"`
-			Enabled   int `json:"enabled"`
-			Suspended int `json:"suspended"`
+			Warning   float32 `json:"warning"`
+			Enabled   float32 `json:"enabled"`
+			Suspended float32 `json:"suspended"`
 		} `json:"prepaidUnits"`
 		SkuPartNumber    string `json:"skuPartNumber"`
 		CapabilityStatus string `json:"capabilityStatus"`
