@@ -1,6 +1,10 @@
 package main
 
-import "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+import (
+	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+)
 
 // Flatteners
 
@@ -28,11 +32,11 @@ func flattenSourceEntitlement(d *schema.ResourceData, in *Items) error {
 	return nil
 }
 
-func getEntitlement(entitlements []*Items, name string) *Items {
+func getEntitlement(entitlements []*Items, name string) (*Items, error) {
 	for i := range entitlements {
 		if entitlements[i].DisplayableName == name {
-			return entitlements[i]
+			return entitlements[i], nil
 		}
 	}
-	return nil
+	return nil, NotFoundError{fmt.Sprintf("no entitlement named '%s' could be found", name)}
 }

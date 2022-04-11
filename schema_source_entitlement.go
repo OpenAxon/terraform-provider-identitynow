@@ -14,6 +14,12 @@ func sourceEntitlementFields() map[string]*schema.Schema {
 			Required:    true,
 			Description: "source id",
 		},
+		"aggregation_source_id": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Default:     "",
+			Description: "aggregation source id",
+		},
 		"source_name": {
 			Type:        schema.TypeString,
 			Computed:    true,

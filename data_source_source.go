@@ -17,6 +17,7 @@ func dataSourceSource() *schema.Resource {
 				Required:    true,
 				Description: "Source id",
 			},
+
 			"name": {
 				Type:        schema.TypeString,
 				Computed:    true,

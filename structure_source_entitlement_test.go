@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"reflect"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 var (

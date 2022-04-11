@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -22,18 +23,56 @@ func dataSourceSourceEntitlementRead(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 
+	aggregationSourceID := d.Get("aggregation_source_id").(string)
 	sourceEntitlements, err := client.GetSourceEntitlements(context.Background(), d.Get("source_id").(string))
 	if err != nil {
-		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
-		if notFound {
-			log.Printf("[INFO] Data source for Source ID %s not found.", d.Get("source_id").(string))
-			return nil
-		}
 		return err
 	}
+	entitlement, err := getEntitlement(sourceEntitlements.Items, d.Get("name").(string))
+	if _, notFound := err.(NotFoundError); notFound {
+		if aggregationSourceID != "" {
 
-	entitlement := getEntitlement(sourceEntitlements.Items, d.Get("name").(string))
+			log.Printf("[INFO] starting soure entitlement aggregation")
+
+			result, err := client.StartSourceEntitlementAggregation(context.Background(), aggregationSourceID)
+			if err != nil {
+				return err
+			}
+
+			for {
+				log.Printf("[INFO] polling aggregation task %s", result.Task.ID)
+				time.Sleep(2 * time.Second)
+
+				status, err := client.GetSourceEntitlementAggregationStatus(context.Background(), result.Task.ID)
+				if err != nil {
+					return err
+				}
+
+				log.Printf("[INFO] task completion status '%s'", status.CompletionStatus)
+
+				if status.CompletionStatus == "Success" {
+					// This sleep is required for the API objects to become available post aggregation.
+					time.Sleep(2 * time.Second)
+					break
+				}
+			}
+
+			sourceEntitlements, err = client.GetSourceEntitlements(context.Background(), d.Get("source_id").(string))
+			if err != nil {
+				return err
+			}
+
+			entitlement, err = getEntitlement(sourceEntitlements.Items, d.Get("name").(string))
+			if err != nil {
+				return err
+			}
+
+		} else {
+			return err
+		}
+	} else {
+		return err
+	}
 
 	return flattenSourceEntitlement(d, entitlement)
 }

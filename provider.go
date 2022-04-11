@@ -44,6 +44,8 @@ func Provider() terraform.ResourceProvider {
 			"identitynow_role":                         resourceRole(),
 			"identitynow_account_aggregation_schedule": resourceScheduleAccountAggregation(),
 			"identitynow_account_schema_attribute":     resourceAccountSchemaAttribute(),
+			"identitynow_governance_group":             resourceGovernanceGroup(),
+			"identitynow_governance_group_membership":  resourceGovernanceGroupMembership(),
 			"identitynow_password_policy":              resourcePasswordPolicy(),
 		},
 
