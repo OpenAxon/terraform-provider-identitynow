@@ -19,6 +19,11 @@ func governanceGroupFields() map[string]*schema.Schema {
 			Required:    true,
 			Description: "Governance group owner ID.",
 		},
+		"approval_scheme": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Governance group approval scheme.",
+		},
 	}
 	return s
 }

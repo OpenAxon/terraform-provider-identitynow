@@ -23,6 +23,6 @@ func expandGovernanceGroupMembership(in *schema.ResourceData) (*GovernanceGroupM
 	}
 
 	obj.GroupID = in.Get("group_id").(string)
-	obj.MemberIDs = in.Get("member_ids").([]string)
+	obj.MemberIDs = in.Get("member_ids").(*schema.Set).List()
 	return &obj, nil
 }

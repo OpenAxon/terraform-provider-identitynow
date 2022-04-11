@@ -1,8 +1,8 @@
 package main
 
 type GovernanceGroupMembership struct {
-	GroupID   string   `json:"group_id,omitempty"`
-	MemberIDs []string `json:"member_ids,omitempty"`
+	GroupID   string        `json:"group_id,omitempty"`
+	MemberIDs []interface{} `json:"member_ids,omitempty"`
 }
 
 type GovernanceGroupMembershipRequest struct {

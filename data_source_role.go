@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func dataSourceRole() *schema.Resource {
@@ -80,7 +81,7 @@ func dataSourceRoleRead(d *schema.ResourceData, meta interface{}) error {
 	role, err := client.GetRole(context.Background(), d.Get("id").(string))
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Data source for Role ID %s not found.", d.Get("id").(string))
 			return nil

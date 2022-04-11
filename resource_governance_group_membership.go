@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -33,8 +32,10 @@ func resourceGovernanceGroupMembershipCreate(d *schema.ResourceData, m interface
 		Add:    []string{},
 		Remove: []string{},
 	}
+
 	for _, member := range membership.MemberIDs {
-		membershipRequest.Add = append(membershipRequest.Add, member)
+		log.Printf("member = %s", member)
+		membershipRequest.Add = append(membershipRequest.Add, member.(string))
 	}
 
 	err = c.UpdateGovernanceGroupMemberships(context.Background(), membership.GroupID, membershipRequest)
@@ -57,7 +58,7 @@ func resourceGovernanceGroupMembershipRead(d *schema.ResourceData, m interface{}
 
 	membership, err := client.GetGovernanceGroupMembership(context.Background(), d.Id())
 	if err != nil {
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			d.SetId("")
 			return nil
@@ -87,7 +88,7 @@ func resourceGovernanceGroupMembershipUpdate(d *schema.ResourceData, m interface
 
 	membershipFromRemote, err := c.GetGovernanceGroupMembership(context.Background(), d.Id())
 	if err != nil {
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			d.SetId("")
 			return nil
@@ -98,76 +99,68 @@ func resourceGovernanceGroupMembershipUpdate(d *schema.ResourceData, m interface
 
 	contains := func(g GovernanceGroupMembership, id string) bool {
 		for _, member := range g.MemberIDs {
-			log.Printf("[DEBUG] value = %+v", member)
 			if member == id {
 				return true
 			}
 		}
 		return false
 	}
-
+	membershipRequest := GovernanceGroupMembershipRequest{
+		Add:    []string{},
+		Remove: []string{},
+	}
 	// First determine what members need to be added if they have been removed from the governance group manually but still defined
-	toBeAdded := []string{}
 	for _, memberFromConfig := range membershipFromConfig.MemberIDs {
-		if !contains(*membershipFromRemote, memberFromConfig) {
-			toBeAdded = append(toBeAdded, memberFromConfig)
+		if !contains(*membershipFromRemote, memberFromConfig.(string)) {
+			membershipRequest.Add = append(membershipRequest.Add, memberFromConfig.(string))
 		}
 	}
 
 	// Now determine what members need to be removed if they were added manually to the group but not defined in config
-	toBeRemoved := []string{}
 	for _, memberFromRemote := range membershipFromRemote.MemberIDs {
-		if !contains(*membershipFromConfig, memberFromRemote) {
-			toBeRemoved = append(toBeRemoved, memberFromRemote)
+		if !contains(*membershipFromConfig, memberFromRemote.(string)) {
+			membershipRequest.Remove = append(membershipRequest.Remove, memberFromRemote.(string))
 		}
 	}
-
-	membershipRequest := GovernanceGroupMembershipRequest{
-		Add:    toBeAdded,
-		Remove: toBeRemoved,
-	}
-
 	err = c.UpdateGovernanceGroupMemberships(context.Background(), membershipFromConfig.GroupID, membershipRequest)
 	if err != nil {
-		return err
+		_, notFound := err.(NotFoundError)
+		if notFound {
+			d.SetId("")
+		} else {
+			return err
+		}
 	}
 	return nil
 }
 
 func resourceGovernanceGroupMembershipDelete(d *schema.ResourceData, m interface{}) error {
-	return fmt.Errorf("resourceGovernanceGroupMembershipDelete not implemented")
+	c, err := m.(*Config).IdentityNowClient()
+	if err != nil {
+		return err
+	}
 
-	// log.Printf("[INFO] Deleting Governance Group ID %s", d.Id())
+	membership, err := expandGovernanceGroupMembership(d)
+	if err != nil {
+		return err
+	}
 
-	// client, err := m.(*Config).IdentityNowClient()
-	// if err != nil {
-	// 	return err
-	// }
+	membershipRequest := GovernanceGroupMembershipRequest{
+		Remove: []string{},
+	}
 
-	// governanceGroup, err := client.GetGovernanceGroup(context.Background(), d.Id())
-	// if err != nil {
-	// 	_, notFound := err.(*NotFoundError)
-	// 	if notFound {
-	// 		log.Printf("[INFO] Governance Group ID %s not found.", d.Id())
-	// 		d.SetId("")
-	// 		return nil
-	// 	}
-	// 	return err
-	// }
+	for _, memberFromRemote := range membership.MemberIDs {
+		membershipRequest.Remove = append(membershipRequest.Remove, memberFromRemote.(string))
+	}
 
-	// res, err := client.DeleteGovernanceGroup(context.Background(), governanceGroup.ID)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// if len(res.Deleted) != 1 {
-	// 	return fmt.Errorf("expected result id array to be 1, got %d :%v", len(res.Deleted), res.Deleted)
-	// }
-
-	// if res.Deleted[0] != governanceGroup.ID {
-	// 	return fmt.Errorf("expected result id to be %s, got %s", governanceGroup.ID, res.Deleted[0])
-	// }
-
-	// d.SetId("")
-	// return nil
+	err = c.UpdateGovernanceGroupMemberships(context.Background(), membership.GroupID, membershipRequest)
+	if err != nil {
+		_, notFound := err.(NotFoundError)
+		if notFound {
+			d.SetId("")
+		} else {
+			return err
+		}
+	}
+	return nil
 }

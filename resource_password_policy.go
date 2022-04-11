@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourcePasswordPolicy() *schema.Resource {
@@ -55,7 +56,7 @@ func resourcePasswordPolicyRead(d *schema.ResourceData, m interface{}) error {
 
 	passwordPolicy, err := client.GetPasswordPolicy(context.Background(), d.Id())
 	if err != nil {
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Password Policy ID %s not found.", d.Id())
 			d.SetId("")
@@ -102,7 +103,7 @@ func resourcePasswordPolicyDelete(d *schema.ResourceData, m interface{}) error {
 
 	passwordPolicy, err := client.GetPasswordPolicy(context.Background(), d.Id())
 	if err != nil {
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Password Policy ID %s not found.", d.Id())
 			d.SetId("")

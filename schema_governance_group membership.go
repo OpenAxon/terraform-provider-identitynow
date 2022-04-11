@@ -14,7 +14,9 @@ func governanceGroupMembershipFields() map[string]*schema.Schema {
 			Type:        schema.TypeSet,
 			Required:    true,
 			Description: "Member IDs",
-			Elem:        schema.TypeString,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
 		},
 	}
 	return s

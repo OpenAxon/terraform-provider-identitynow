@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceAccountSchemaAttribute() *schema.Resource {
@@ -62,7 +63,7 @@ func resourceAccountSchemaAttributeRead(d *schema.ResourceData, m interface{}) e
 	attributes, err := client.GetAccountSchemaAttributes(context.Background(), sourceId)
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("Source ID %s not found.", sourceId)
 			d.SetId("")
@@ -120,7 +121,7 @@ func resourceAccountSchemaAttributeDelete(d *schema.ResourceData, m interface{})
 	attributes, err := client.GetAccountSchemaAttributes(context.Background(), sourceId)
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("Source ID %s not found.", sourceId)
 			d.SetId("")

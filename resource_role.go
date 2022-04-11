@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceRole() *schema.Resource {
@@ -54,7 +55,7 @@ func resourceRoleRead(d *schema.ResourceData, m interface{}) error {
 	role, err := client.GetRole(context.Background(), d.Id())
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Role ID %s not found.", d.Id())
 			d.SetId("")
@@ -105,7 +106,7 @@ func resourceRoleDelete(d *schema.ResourceData, m interface{}) error {
 	role, err := client.GetRole(context.Background(), d.Id())
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Role ID %s not found.", d.Id())
 			d.SetId("")

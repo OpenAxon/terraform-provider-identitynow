@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -18,6 +20,7 @@ func resourceGovernanceGroup() *schema.Resource {
 }
 
 func resourceGovernanceGroupCreate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("resourceGovernanceGroupCreate")
 	governanceGroup, err := expandGovernanceGroup(d)
 	if err != nil {
 		return err
@@ -43,6 +46,7 @@ func resourceGovernanceGroupCreate(d *schema.ResourceData, m interface{}) error 
 }
 
 func resourceGovernanceGroupRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("resourceGovernanceGroupRead")
 	client, err := m.(*Config).IdentityNowClient()
 	if err != nil {
 		return err
@@ -50,8 +54,7 @@ func resourceGovernanceGroupRead(d *schema.ResourceData, m interface{}) error {
 
 	governanceGroup, err := client.GetGovernanceGroup(context.Background(), d.Id())
 	if err != nil {
-		_, notFound := err.(*NotFoundError)
-		if notFound {
+		if _, notFound := err.(NotFoundError); notFound {
 			d.SetId("")
 			return nil
 		} else {
@@ -68,6 +71,7 @@ func resourceGovernanceGroupRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceGovernanceGroupUpdate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("resourceGovernanceGroupUpdate")
 	client, err := m.(*Config).IdentityNowClient()
 	if err != nil {
 		return err
@@ -87,6 +91,7 @@ func resourceGovernanceGroupUpdate(d *schema.ResourceData, m interface{}) error 
 }
 
 func resourceGovernanceGroupDelete(d *schema.ResourceData, m interface{}) error {
+	log.Printf("resourceGovernanceGroupDelete")
 	client, err := m.(*Config).IdentityNowClient()
 	if err != nil {
 		return err
@@ -94,8 +99,7 @@ func resourceGovernanceGroupDelete(d *schema.ResourceData, m interface{}) error 
 
 	governanceGroup, err := client.GetGovernanceGroup(context.Background(), d.Id())
 	if err != nil {
-		_, notFound := err.(*NotFoundError)
-		if notFound {
+		if _, notFound := err.(NotFoundError); notFound {
 			d.SetId("")
 			return nil
 		} else {
@@ -108,8 +112,8 @@ func resourceGovernanceGroupDelete(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	if len(res.Deleted) != 1 {
-		return fmt.Errorf("expected result id array to be 1, got %d :%v", len(res.Deleted), res.Deleted)
+	if len(res.Deleted) == 0 {
+		return errors.New("could not delete governance group. ensure it is free of any associations.")
 	}
 
 	if res.Deleted[0] != governanceGroup.ID {

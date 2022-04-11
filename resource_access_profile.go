@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceAccessProfile() *schema.Resource {
@@ -54,7 +55,7 @@ func resourceAccessProfileRead(d *schema.ResourceData, m interface{}) error {
 	accessProfile, err := client.GetAccessProfile(context.Background(), d.Id())
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Access Profile ID %s not found.", d.Id())
 			d.SetId("")
@@ -102,7 +103,7 @@ func resourceAccessProfileDelete(d *schema.ResourceData, m interface{}) error {
 	accessProfile, err := client.GetAccessProfile(context.Background(), d.Id())
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Access Profile ID %s not found.", d.Id())
 			d.SetId("")

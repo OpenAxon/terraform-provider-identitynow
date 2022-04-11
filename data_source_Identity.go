@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func dataSourceIdentity() *schema.Resource {
@@ -24,7 +25,7 @@ func dataSourceIdentityRead(d *schema.ResourceData, meta interface{}) error {
 	identity, err := client.GetIdentity(context.Background(), d.Get("alias").(string))
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Data source for Identity alias %s not found.", d.Get("alias").(string))
 			return nil

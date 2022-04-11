@@ -102,7 +102,7 @@ func dataSourceAccessProfileRead(d *schema.ResourceData, meta interface{}) error
 	accessProfile, err := client.GetAccessProfile(context.Background(), d.Get("id").(string))
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Data source for Access Profile ID %s not found.", d.Get("id").(string))
 			return nil

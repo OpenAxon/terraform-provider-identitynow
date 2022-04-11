@@ -95,7 +95,7 @@ func dataSourceSourceRead(d *schema.ResourceData, meta interface{}) error {
 	source, err := client.GetSource(context.Background(), d.Get("id").(string))
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Data source for Source ID %s not found.", d.Get("id").(string))
 			return nil

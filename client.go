@@ -577,7 +577,8 @@ func (c *Client) GetGovernanceGroupMembership(ctx context.Context, groupID strin
 	}
 
 	membership := &GovernanceGroupMembership{
-		GroupID: groupID,
+		GroupID:   groupID,
+		MemberIDs: []interface{}{},
 	}
 	for _, member := range members {
 		membership.MemberIDs = append(membership.MemberIDs, member.ExternalID)
@@ -614,7 +615,6 @@ func (c *Client) newHttpRequest(
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.accessToken))
-	log.Printf("[DEBUG] access token = %s", c.accessToken)
 	for _, h := range Headers {
 		req.Header.Set(h.Key, h.Value)
 	}
@@ -630,7 +630,7 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	defer res.Body.Close()
 	responseBytes, _ := ioutil.ReadAll(res.Body)
 
-	log.Printf("[DEBUG] response = %s", string(responseBytes))
+	log.Printf("[DEBUG] response code = %d, response = %s", res.StatusCode, string(responseBytes))
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		if res.StatusCode == http.StatusNotFound {

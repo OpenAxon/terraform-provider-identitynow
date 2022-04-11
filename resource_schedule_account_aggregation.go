@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	schema "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
+
+	schema "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceScheduleAccountAggregation() *schema.Resource {
@@ -59,7 +60,7 @@ func resourceAccountAggregationScheduleRead(d *schema.ResourceData, m interface{
 	}
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Account Aggregation Schedule for Source ID %s not found.", d.Id())
 			d.SetId("")
@@ -87,7 +88,7 @@ func resourceAccountAggregationScheduleDelete(d *schema.ResourceData, m interfac
 	accountAggregationSchedule, err := client.GetAccountAggregationSchedule(context.Background(), d.Id())
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
-		_, notFound := err.(*NotFoundError)
+		_, notFound := err.(NotFoundError)
 		if notFound {
 			log.Printf("[INFO] Account Aggregation Schedule for source ID %s not found.", d.Id())
 			d.SetId("")

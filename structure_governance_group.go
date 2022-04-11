@@ -13,6 +13,7 @@ func flattenGovernanceGroup(d *schema.ResourceData, in *GovernanceGroup) error {
 	d.SetId(in.ID)
 	d.Set("name", in.Name)
 	d.Set("owner_id", in.Owner.ID)
+	d.Set("approval_scheme", fmt.Sprintf("workgroup: %s", in.ID))
 	return nil
 }
 
@@ -28,5 +29,6 @@ func expandGovernanceGroup(in *schema.ResourceData) (*GovernanceGroup, error) {
 	obj.Name = in.Get("name").(string)
 	obj.Description = in.Get("description").(string)
 	obj.Owner.ID = in.Get("owner_id").(string)
+	obj.ApprovalScheme = in.Get("approval_scheme").(string)
 	return &obj, nil
 }
