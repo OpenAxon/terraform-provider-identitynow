@@ -6,7 +6,6 @@ set -euo pipefail
 # TF will not longer attempt to look for any versions of this provider on the remote registry.
 # When finished with development, you can remove the folder from your laptop to start using the public provider again.
 # https://www.terraform.io/docs/commands/cli-config.html#implied-local-mirror-directories
-VERSION=0.9.0
 go build -o terraform-provider-identitynow
-mkdir -p ~/.terraform.d/plugins/registry.terraform.io/openaxon/identitynow/${VERSION}/darwin_amd64
-mv terraform-provider-identitynow ~/.terraform.d/plugins/registry.terraform.io/openaxon/identitynow/${VERSION}/darwin_amd64/terraform-provider-identitynow_v${VERSION}
+mkdir -p ~/.terraform.d/plugins/registry.terraform.io/openaxon/identitynow/${VERSION}/linux_amd64
+mv terraform-provider-identitynow ~/.terraform.d/plugins/registry.terraform.io/openaxon/identitynow/${VERSION}/linux_amd64/terraform-provider-identitynow_v${VERSION}

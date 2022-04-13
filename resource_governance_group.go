@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -107,17 +105,22 @@ func resourceGovernanceGroupDelete(d *schema.ResourceData, m interface{}) error 
 		}
 	}
 
-	res, err := client.DeleteGovernanceGroup(context.Background(), governanceGroup.ID)
+	// res, err := client.DeleteGovernanceGroup(context.Background(), governanceGroup.ID)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// if len(res.Deleted) == 0 {
+	// 	return errors.New("could not delete governance group. ensure it is free of any associations.")
+	// }
+
+	// if res.Deleted[0] != governanceGroup.ID {
+	// 	return fmt.Errorf("expected result id to be %s, got %s", governanceGroup.ID, res.Deleted[0])
+	// }
+
+	err = client.DeleteGovernanceGroup(context.Background(), governanceGroup.ID)
 	if err != nil {
 		return err
-	}
-
-	if len(res.Deleted) == 0 {
-		return errors.New("could not delete governance group. ensure it is free of any associations.")
-	}
-
-	if res.Deleted[0] != governanceGroup.ID {
-		return fmt.Errorf("expected result id to be %s, got %s", governanceGroup.ID, res.Deleted[0])
 	}
 
 	d.SetId("")

@@ -41,6 +41,8 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"identitynow_source":                       resourceSource(),
 			"identitynow_access_profile":               resourceAccessProfile(),
+			"identitynow_application":                  resourceApplication(),
+			"identitynow_application_configuration":    resourceApplicationConfiguration(),
 			"identitynow_role":                         resourceRole(),
 			"identitynow_account_aggregation_schedule": resourceScheduleAccountAggregation(),
 			"identitynow_account_schema_attribute":     resourceAccountSchemaAttribute(),

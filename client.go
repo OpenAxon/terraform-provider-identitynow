@@ -185,6 +185,66 @@ func (c *Client) GetSourceEntitlementAggregationStatus(ctx context.Context, id s
 	return &res, c.sendRequest(req, &res)
 }
 
+func (c *Client) CreateApplication(ctx context.Context, application *Application) (*Application, error) {
+	data := url.Values{}
+	data.Set("name", application.Name)
+	data.Set("description", application.Description)
+
+	req, err := c.newHttpRequest(
+		ctx,
+		http.MethodPost,
+		fmt.Sprintf("%s/cc/api/app/create/", c.BaseURL),
+		strings.NewReader(data.Encode()),
+		headerContentTypeFormURLEncoded,
+		headerAcceptJson)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &Application{}
+	return res, c.sendRequest(req, res)
+}
+
+func (c *Client) GetApplication(ctx context.Context, id string, v interface{}) error {
+	req, err := c.newHttpRequest(
+		ctx,
+		http.MethodGet,
+		fmt.Sprintf("%s/cc/api/app/get/%s", c.BaseURL, id),
+		nil,
+		headerAcceptJson)
+	if err != nil {
+		return err
+	}
+	return c.sendRequest(req, &v)
+}
+
+func (c *Client) UpdateApplication(ctx context.Context, id string, v interface{}) error {
+	req, err := c.newHttpRequest(
+		ctx,
+		http.MethodPost,
+		fmt.Sprintf("%s/cc/api/app/update/%s", c.BaseURL, id),
+		v,
+		headerContentTypeJson,
+		headerAcceptJson)
+	if err != nil {
+		return err
+	}
+	return c.sendRequest(req, nil)
+}
+
+func (c *Client) DeleteApplication(ctx context.Context, id string) error {
+	req, err := c.newHttpRequest(
+		ctx,
+		http.MethodPost,
+		fmt.Sprintf("%s/cc/api/app/delete/%s", c.BaseURL, id),
+		nil,
+		headerAcceptAll)
+	if err != nil {
+		return err
+	}
+	return c.sendRequest(req, nil)
+}
+
 func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessProfile) (*AccessProfile, error) {
 	req, err := c.newHttpRequest(ctx,
 		http.MethodPost,
@@ -523,24 +583,18 @@ func (c *Client) UpdateGovernanceGroup(ctx context.Context, group GovernanceGrou
 	return &res, nil
 }
 
-func (c *Client) DeleteGovernanceGroup(ctx context.Context, id string) (*GovernanceGroupBulkDeletionResponse, error) {
+func (c *Client) DeleteGovernanceGroup(ctx context.Context, id string) error {
 	req, err := c.newHttpRequest(
 		ctx,
-		http.MethodPost,
-		fmt.Sprintf("%s/v2/workgroups/bulk-delete", c.BaseURL),
-		&GovernanceGroupBulkDeletionRequest{
-			IDs: []string{
-				id,
-			},
-		},
-		headerContentTypeJson,
+		http.MethodDelete,
+		fmt.Sprintf("%s/v2/workgroups/%s", c.BaseURL, id),
+		nil,
 		headerAcceptJson)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	res := &GovernanceGroupBulkDeletionResponse{}
-	return res, c.sendRequest(req, res)
+	return c.sendRequest(req, nil)
 }
 
 func (c *Client) UpdateGovernanceGroupMemberships(ctx context.Context, groupID string, request GovernanceGroupMembershipRequest) error {
