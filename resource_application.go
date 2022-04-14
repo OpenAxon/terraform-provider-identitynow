@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -38,6 +39,7 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	time.Sleep(time.Millisecond * 500)
 	return resourceApplicationRead(d, m)
 }
 
@@ -72,6 +74,7 @@ func resourceApplicationUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	time.Sleep(time.Millisecond * 500)
 	return resourceApplicationRead(d, m)
 }
 
@@ -88,5 +91,6 @@ func resourceApplicationDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.SetId("")
+	time.Sleep(time.Millisecond * 500)
 	return nil
 }

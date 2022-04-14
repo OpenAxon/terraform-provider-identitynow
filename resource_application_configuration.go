@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -49,6 +50,7 @@ func resourceApplicationConfigurationCreate(d *schema.ResourceData, m interface{
 	defaultValues, _ := json.Marshal(defaultConfig)
 	d.Set("default_values", string(defaultValues))
 
+	time.Sleep(time.Millisecond * 500)
 	return resourceApplicationConfigurationRead(d, m)
 }
 
@@ -80,6 +82,7 @@ func resourceApplicationConfigurationUpdate(d *schema.ResourceData, m interface{
 		return err
 	}
 
+	time.Sleep(time.Millisecond * 500)
 	return resourceApplicationConfigurationRead(d, m)
 }
 
@@ -99,5 +102,6 @@ func resourceApplicationConfigurationDelete(d *schema.ResourceData, m interface{
 		return err
 	}
 	d.SetId("")
+	time.Sleep(time.Millisecond * 500)
 	return nil
 }

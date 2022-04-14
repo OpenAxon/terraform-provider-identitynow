@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -42,6 +43,7 @@ func resourceAccessProfileCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	time.Sleep(time.Millisecond * 500)
 	return resourceAccessProfileRead(d, m)
 }
 
@@ -89,6 +91,7 @@ func resourceAccessProfileUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	time.Sleep(time.Millisecond * 500)
 	return resourceAccessProfileRead(d, m)
 }
 
@@ -118,5 +121,7 @@ func resourceAccessProfileDelete(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId("")
+
+	time.Sleep(time.Millisecond * 500)
 	return nil
 }

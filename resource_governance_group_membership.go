@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -47,6 +48,7 @@ func resourceGovernanceGroupMembershipCreate(d *schema.ResourceData, m interface
 	if err != nil {
 		return err
 	}
+	time.Sleep(time.Millisecond * 500)
 	return resourceGovernanceGroupMembershipRead(d, m)
 }
 
@@ -131,6 +133,7 @@ func resourceGovernanceGroupMembershipUpdate(d *schema.ResourceData, m interface
 			return err
 		}
 	}
+	time.Sleep(time.Millisecond * 500)
 	return nil
 }
 
@@ -162,5 +165,6 @@ func resourceGovernanceGroupMembershipDelete(d *schema.ResourceData, m interface
 			return err
 		}
 	}
+	time.Sleep(time.Millisecond * 500)
 	return nil
 }
