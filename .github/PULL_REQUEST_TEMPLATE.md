@@ -7,4 +7,4 @@
 ### Checklist
 <!-- [Place an '[x]' (no spaces) in all applicable fields. Please remove unrelated fields.] -->
 - [ ] README.md was updated
-- [ ] CHANGELOG.md was updated -->
+- [ ] CHANGELOG.md was updated
