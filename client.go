@@ -644,12 +644,14 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 		var errRes errorResponse
 		err = json.NewDecoder(res.Body).Decode(&errRes)
 		if err == nil {
+			if len(errRes.Messages) == 0 {
+				return fmt.Errorf("unknown error, status code: %d", res.StatusCode)
+			}
 			if res.StatusCode == http.StatusNotFound {
 				// on the return statement, an interface value of type error is created by the compiler and bound to the pointer to satisfy the return argument.
 				return &NotFoundError{errRes.Messages[0].Text}
-			} else {
-				return errors.New(errRes.Messages[0].Text)
 			}
+			return errors.New(errRes.Messages[0].Text)
 		}
 
 		return fmt.Errorf("unknown error, status code: %d", res.StatusCode)

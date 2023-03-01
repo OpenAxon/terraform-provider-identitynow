@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -18,6 +19,7 @@ func flattenSource(d *schema.ResourceData, in *Source) error {
 	d.Set("connector", in.Connector)
 	d.Set("delete_threshold", in.DeleteThreshold)
 	d.Set("authoritative", in.Authoritative)
+	d.Set("type", in.Type)
 
 	if in.Owner != nil {
 		v, ok := d.Get("owner").([]interface{})
@@ -94,6 +96,7 @@ func expandSource(in *schema.ResourceData) (*Source, error) {
 	obj.Name = in.Get("name").(string)
 	obj.Description = in.Get("description").(string)
 	obj.Connector = in.Get("connector").(string)
+	obj.Type = in.Get("type").(string)
 
 	if v, ok := in.Get("authoritative").(bool); ok {
 		obj.Authoritative = v
