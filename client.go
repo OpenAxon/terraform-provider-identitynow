@@ -65,7 +65,7 @@ func (c *Client) GetToken(ctx context.Context) error {
 
 func (c *Client) GetSource(ctx context.Context, id string) (*Source, error) {
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/sources/%s", c.BaseURL, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/sources/%s", c.BaseURL, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (c *Client) UpdateSource(ctx context.Context, source *Source) (*Source, err
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v3/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
