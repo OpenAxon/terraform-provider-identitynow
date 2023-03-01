@@ -19,6 +19,7 @@ func flattenSource(d *schema.ResourceData, in *Source) error {
 	d.Set("connector", in.Connector)
 	d.Set("delete_threshold", in.DeleteThreshold)
 	d.Set("authoritative", in.Authoritative)
+	d.Set("type", in.Type)
 
 	if in.Owner != nil {
 		v, ok := d.Get("owner").([]interface{})
