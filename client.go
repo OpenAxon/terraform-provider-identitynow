@@ -113,7 +113,7 @@ func (c *Client) UpdateSource(ctx context.Context, source *Source) (*Source, err
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/beta/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/beta/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
