@@ -16,6 +16,11 @@ func sourceFields() map[string]*schema.Schema {
 			Required:    true,
 			Description: "Source description",
 		},
+		"type": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Specifies the type of system being managed",
+		},
 		"connector": {
 			Type:        schema.TypeString,
 			Required:    true,
