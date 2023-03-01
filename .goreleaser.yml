@@ -17,6 +17,7 @@ builds:
     - '-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}'
   goos:
     - freebsd
+    - windows
     - linux
     - darwin
   goarch:
@@ -27,6 +28,12 @@ builds:
   ignore:
     - goos: darwin
       goarch: '386'
+    - goarch: arm
+      goos: windows
+    - goarch: arm64
+      goos: freebsd
+    - goarch: arm64
+      goos: windows
   binary: '{{ .ProjectName }}_v{{ .Version }}'
 archives:
 - format: zip
