@@ -645,7 +645,7 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 		err = json.NewDecoder(res.Body).Decode(&errRes)
 		if err == nil {
 			if len(errRes.Messages) == 0 {
-				return fmt.Errorf("unknown error, no error message given, status code: %d", res.StatusCode)
+				return fmt.Errorf("unknown error, status code: %d", res.StatusCode)
 			}
 			if res.StatusCode == http.StatusNotFound {
 				// on the return statement, an interface value of type error is created by the compiler and bound to the pointer to satisfy the return argument.
