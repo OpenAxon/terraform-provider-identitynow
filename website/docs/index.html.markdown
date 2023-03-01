@@ -8,7 +8,7 @@ description: |-
 
 # IdentityNow Provider
 
-The IdentityNow Provider can be used to configure infrastructure in [SailPoint IdentitNow](https://www.sailpoint.com/products/identitynow/) using the official API's. Documentation regarding the [Data Sources](/docs/configuration/data-sources.html) and [Resources](/docs/configuration/resources.html) supported by the IdentityNow Provider can be found in the navigation to the left.
+The IdentityNow Provider can be used to configure infrastructure in [SailPoint IdentityNow](https://www.sailpoint.com/products/identitynow/) using the official API's. Documentation regarding the [Data Sources](/docs/configuration/data-sources.html) and [Resources](/docs/configuration/resources.html) supported by the IdentityNow Provider can be found in the navigation to the left.
 
 Interested in the provider's latest features, or want to make sure you're up to date? Check out the [changelog](https://github.com/OpenAxon/terraform-provider-identitynow/blob/master/CHANGELOG.md) for version information and release notes.
 
@@ -77,4 +77,4 @@ The following arguments are supported:
 
 * `client_id` - (Required) API client used to authenticate with the IdentityNow API.
 
-* `client_secret` - (Required) API client secret used to authenticate with the IdentityNow API.The Cloud Environment which should be used. Possible values are `public`, `usgovernment`, `german`, and `china`. Defaults to `public`. This can also be sourced from the `ARM_ENVIRONMENT` Environment Variable.
+* `client_secret` - (Required) API client secret used to authenticate with the IdentityNow API.
