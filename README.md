@@ -1,6 +1,6 @@
 To find how you can declare resources see [examples folder](./examples/)
 
-####Limitations:
+### Limitations:
 - Sources get created first, but an aggregation has to run before the rest of the plan can complete successfully because the entitlement data lookups will fail until the aggregation has pulled the entitlements from the source into IdentityNow.
 
 - After creating the source, you also need to go into the UI and press the "Test Connection" button to verify the source. This unlocks the ability to apply `identitynow_account_schema_attribute` and `identitynow_account_aggregation_schedule`.
@@ -13,9 +13,11 @@ To find how you can declare resources see [examples folder](./examples/)
 
 # Development
 Edit the Go files that make up the provider, and rebuild the provider.
+
 ```bash
-./build.sh
+./scripts/build.sh
 ```
+
 This script places the provider binary in an implied local mirror directory ($HOME/.terraform.d/plugins/). See build.sh
 for more comments about ensuring that Terraform uses the local mirror rather than searching the remote registry. 
 
@@ -28,11 +30,7 @@ $ make test
 In order to run the full suite of Acceptance test identitynow url, client id and secret, owner name and id, cluster name and id are needed to make the API call to create IdentityNow source for test.
 
 To run acceptance tests, first you need to update the `script/gotestacc_vars.sh` with above variables values and then simply run `make testacc`.
+
 ```sh
 $ make testacc
 ```
-
-
-
-
-
