@@ -174,8 +174,8 @@ func (c *Client) GetAccessProfile(ctx context.Context, id string) (*AccessProfil
 	return &res, nil
 }
 
-func (c *Client) GetSourceEntitlements(ctx context.Context, id string) (*SourceEntitlements, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/entitlement/list?CISApplicationId=%s", c.BaseURL, id), nil)
+func (c *Client) GetSourceEntitlements(ctx context.Context, id string) ([]*SourceEntitlement, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/entitlement?filters=source.id eq \"%s\"", c.BaseURL, id), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -183,14 +183,14 @@ func (c *Client) GetSourceEntitlements(ctx context.Context, id string) (*SourceE
 
 	req = req.WithContext(ctx)
 
-	res := SourceEntitlements{}
+	var res []*SourceEntitlement
 	if err := c.sendRequest(req, &res); err != nil {
 		log.Printf("Failed Source Entitlements get response:%+v\n", res)
 		log.Fatal(err)
 		return nil, err
 	}
 
-	return &res, nil
+	return res, nil
 }
 
 func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessProfile) (*AccessProfile, error) {
@@ -268,7 +268,7 @@ func (c *Client) DeleteAccessProfile(ctx context.Context, accessProfile *AccessP
 }
 
 func (c *Client) GetRole(ctx context.Context, id string) (*Role, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/role/get?id=%s", c.BaseURL, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/roles/%s", c.BaseURL, id), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -294,7 +294,7 @@ func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/cc/api/role/create", c.BaseURL), bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v3/roles", c.BaseURL), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("New request failed:%+v\n", err)
 		return nil, err
@@ -315,18 +315,18 @@ func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
 	return &res, nil
 }
 
-func (c *Client) UpdateRole(ctx context.Context, role *Role) (*Role, error) {
+func (c *Client) UpdateRole(ctx context.Context, role []*UpdateRole, id interface{}) (*Role, error) {
 	body, err := json.Marshal(&role)
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/cc/api/role/update/?id=%s", c.BaseURL, role.ID), bytes.NewBuffer(body))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/roles/%s", c.BaseURL, id), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json-patch+json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)

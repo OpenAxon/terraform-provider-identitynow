@@ -15,35 +15,19 @@ func dataSourceRole() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"access_profile_ids": {
+			"accessProfiles": {
 				Type:     schema.TypeList,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: roleAccessProfilesFields(),
 				},
-			},
-			"approval_schemes": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"denied_comments_required": {
-				Type:     schema.TypeBool,
-				Computed: true,
 			},
 			"description": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"disabled": {
+			"enabled": {
 				Type:     schema.TypeBool,
-				Computed: true,
-			},
-			"display_name": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"identity_count": {
-				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"name": {
@@ -51,19 +35,14 @@ func dataSourceRole() *schema.Resource {
 				Computed: true,
 			},
 			"owner": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Computed: true,
-			},
-			"request_comments_required": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Elem: &schema.Resource{
+					Schema: sourceOwnerFields(),
+				},
 			},
 			"requestable": {
 				Type:     schema.TypeBool,
-				Computed: true,
-			},
-			"revoke_request_approval_schemes": {
-				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},

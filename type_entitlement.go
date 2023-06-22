@@ -1,36 +1,38 @@
 package main
 
-type SourceEntitlements struct {
-	SourceID          string   `json:"id"`
-	EntitlementsCount int      `json:"count,omitempty"`
-	Items             []*Items `json:"items,omitempty"`
+type SourceEntitlement struct {
+	Attribute              string        `json:"attribute,omitempty"`
+	Value                  string        `json:"value,omitempty"`
+	Description            interface{}   `json:"description,omitempty"`
+	SourceSchemaObjectType string        `json:"sourceSchemaObjectType,omitempty"`
+	Privileged             bool          `json:"privileged,omitempty"`
+	CloudGoverned          bool          `json:"cloudGoverned,omitempty"`
+	Requestable            bool          `json:"requestable,omitempty"`
+	Attributes             *Attributes   `json:"attributes,omitempty"`
+	Source                 *SourceInfo   `json:"source,omitempty"`
+	Owner                  interface{}   `json:"owner,omitempty"`
+	DirectPermissions      []interface{} `json:"directPermissions,omitempty"`
+	Segments               []interface{} `json:"segments,omitempty"`
+	ManuallyUpdatedFields  []interface{} `json:"manuallyUpdatedFields,omitempty"`
+	Modified               interface{}   `json:"modified,omitempty"`
+	Created                interface{}   `json:"created,omitempty"`
+	ID                     string        `json:"id"`
+	Name                   string        `json:"name"`
 }
 
-type Items struct {
-	SourceID   string `json:"applicationId"`
-	SourceName string `json:"applicationName"`
-	Attribute  string `json:"attribute,omitempty"`
-	Attributes struct {
-		DisplayName     string      `json:"displayName,omitempty"`
-		GroupTypes      interface{} `json:"groupTypes,omitempty"`
-		MailEnabled     bool        `json:"mailEnabled,omitempty"`
-		MailNickname    string      `json:"mailNickname,omitempty"`
-		Owners          interface{} `json:"owners,omitempty"`
-		ProxyAddresses  interface{} `json:"proxyAddresses,omitempty"`
-		SecurityEnabled bool        `json:"securityEnabled,omitempty"`
-		TeamsEnabled    bool        `json:"teamsEnabled,omitempty"`
-	} `json:"attributes,omitempty"`
-	CreatedTime       interface{}   `json:"createdTime,omitempty"`
-	DeletedTime       interface{}   `json:"deletedTime,omitempty"`
-	Description       interface{}   `json:"description,omitempty"`
-	DirectPermissions []interface{} `json:"directPermissions,omitempty"`
-	DisplayName       interface{}   `json:"displayName"`
-	DisplayableName   string        `json:"displayableName"`
-	ID                string        `json:"id"`
-	LastModifiedTime  interface{}   `json:"lastModifiedTime,omitempty"`
-	OwnerID           interface{}   `json:"ownerId,omitempty"`
-	OwnerUID          interface{}   `json:"ownerUid,omitempty"`
-	Privileged        bool          `json:"privileged,omitempty"`
-	Schema            string        `json:"schema,omitempty"`
-	Value             string        `json:"value,omitempty"`
+type Attributes struct {
+	GroupType         string      `json:"groupType,omitempty"`
+	SAMAccountName    string      `json:"sAMAccountName,omitempty"`
+	ObjectGuid        interface{} `json:"objectguid,omitempty"`
+	GroupScope        interface{} `json:"GroupScope,omitempty"`
+	Description       interface{} `json:"description,omitempty"`
+	ObjectSid         interface{} `json:"objectSid,omitempty"`
+	Cn                interface{} `json:"cn,omitempty"`
+	MsDSPrincipalName interface{} `json:"msDS-PrincipalName,omitempty"`
+}
+
+type SourceInfo struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
