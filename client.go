@@ -431,8 +431,8 @@ func (c *Client) ManageAccountAggregationSchedule(ctx context.Context, scheduleA
 	return &res, nil
 }
 
-func (c *Client) GetAccountSchemaAttributes(ctx context.Context, sourceId string) (*AccountSchema, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/source/getAccountSchema/%s", c.BaseURL, sourceId), nil)
+func (c *Client) GetAccountSchema(ctx context.Context, sourceId string, id string) (*AccountSchema, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/sources/%s/schemas/%s", c.BaseURL, sourceId, id), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -450,32 +450,22 @@ func (c *Client) GetAccountSchemaAttributes(ctx context.Context, sourceId string
 	return &res, nil
 }
 
-func (c *Client) CreateAccountSchemaAttribute(ctx context.Context, attribute *AccountSchemaAttribute) (*AccountSchemaAttribute, error) {
-	endpoint := fmt.Sprintf("%s/cc/api/source/createSchemaAttribute/%s", c.BaseURL, attribute.SourceID)
-	data := url.Values{}
-	data.Set("name", attribute.Name)
-	data.Set("description", attribute.Description)
-	data.Set("type", attribute.Type)
-	data.Set("objectType", attribute.ObjectType)
-	data.Set("displayAttribute", fmt.Sprintf("%t", attribute.DisplayAttribute))
-	data.Set("entitlement", fmt.Sprintf("%t", attribute.Entitlement))
-	data.Set("identityAttribute", fmt.Sprintf("%t", attribute.IdentityAttribute))
-	data.Set("managed", fmt.Sprintf("%t", attribute.Managed))
-	data.Set("minable", fmt.Sprintf("%t", attribute.Minable))
-	data.Set("multi", fmt.Sprintf("%t", attribute.Multi))
-
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(data.Encode()))
-
+func (c *Client) CreateAccountSchema(ctx context.Context, accountSchema *AccountSchema) (*AccountSchema, error) {
+	body, err := json.Marshal(&accountSchema)
 	if err != nil {
 		return nil, err
 	}
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v3/sources/%s/schemas", c.BaseURL, accountSchema.SourceID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("New request failed:%+v\n", err)
+		return nil, err
+	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
-
-	res := AccountSchemaAttribute{}
+	res := AccountSchema{}
 	if err := c.sendRequest(req, &res); err != nil {
 		log.Printf("Failed Account Schema Attribute creation. response:%+v\n", res)
 		log.Fatal(err)
@@ -485,43 +475,55 @@ func (c *Client) CreateAccountSchemaAttribute(ctx context.Context, attribute *Ac
 	return &res, nil
 }
 
-func (c *Client) UpdateAccountSchemaAttribute(ctx context.Context, attribute *AccountSchemaAttribute) (*AccountSchemaAttribute, error) {
-	_, errDelete := c.DeleteAccountSchemaAttribute(ctx, attribute)
-	if errDelete != nil {
-		return nil, errDelete
-	}
-	res, errCreate := c.CreateAccountSchemaAttribute(ctx, attribute)
-	if errCreate != nil {
-		return nil, errDelete
-	}
-	return res, nil
-}
-
-func (c *Client) DeleteAccountSchemaAttribute(ctx context.Context, attribute *AccountSchemaAttribute) (*AccountSchemaAttribute, error) {
-	endpoint := fmt.Sprintf("%s/cc/api/source/deleteSchemaAttribute/%s", c.BaseURL, attribute.SourceID)
-	data := url.Values{}
-	data.Set("names", attribute.Name)
-	data.Set("objectType", attribute.ObjectType)
-
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(data.Encode()))
-
+func (c *Client) UpdateAccountSchema(ctx context.Context, accountSchema *AccountSchema) (*AccountSchema, error) {
+	body, err := json.Marshal(&accountSchema)
 	if err != nil {
 		return nil, err
+	}
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v3/sources/%s/schemas/%s", c.BaseURL, accountSchema.SourceID, accountSchema.ID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("New request failed:%+v\n", err)
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
+	req = req.WithContext(ctx)
+	res := AccountSchema{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Account Schema Attribute updating. response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) DeleteAccountSchema(ctx context.Context, accountSchema *AccountSchema) error {
+	endpoint := fmt.Sprintf("%s/v3/sources/%s/schemas/%s", c.BaseURL, accountSchema.SourceID, accountSchema.ID)
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("DELETE", endpoint, nil)
+
+	if err != nil {
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
+	res, err := client.Do(req)
 
-	res := AccountSchemaAttribute{}
-	if err := c.sendRequest(req, &res); err != nil {
+	if err != nil {
 		log.Printf("Failed Account Schema Attribute deletion. response:%+v\n", res)
 		log.Fatal(err)
-		return nil, err
+		return err
 	}
 
-	return &res, nil
+	return nil
 }
 
 func (c *Client) CreatePasswordPolicy(ctx context.Context, attributes *PasswordPolicy) (*PasswordPolicy, error) {

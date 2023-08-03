@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"strings"
 )
 
 func toArrayInterface(in []string) []interface{} {
@@ -25,16 +24,6 @@ func toArrayString(in []interface{}) []string {
 		out[i] = v.(string)
 	}
 	return out
-}
-
-func splitAccountSchemaAttributeID(id string) (sourceId string, name string, err error) {
-	separator := "-"
-
-	result := strings.Split(id, separator)
-	if len(result) == 2 {
-		return result[0], result[1], nil
-	}
-	return "", "", fmt.Errorf("[ERROR Getting source id and name. id: %s", id)
 }
 
 func setPasswordPolicyUrlValues(attributes *PasswordPolicy) (url.Values, error) {

@@ -27,12 +27,12 @@ func flattenRole(d *schema.ResourceData, in *Role) error {
 		d.Set("owner", flattenObjectRole(in.RoleOwner, v))
 	}
 	if in.AccessProfiles != nil {
-		v, ok := d.Get("schemas").([]interface{})
+		v, ok := d.Get("access_profiles").([]interface{})
 		if !ok {
 			v = []interface{}{}
 		}
 
-		d.Set("schemas", flattenObjectRoles(in.AccessProfiles, v))
+		d.Set("access_profiles", flattenObjectRoles(in.AccessProfiles, v))
 	}
 	return nil
 }

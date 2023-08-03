@@ -1,74 +1,67 @@
 package main
 
-import (
-	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-)
-
 // Flatteners
 
-func flattenAccountSchemaAttribute(d *schema.ResourceData, in *AccountSchemaAttribute) error {
+func flattenAccountSchemaAttributes(in []*AccountSchemaAttribute, p []interface{}) []interface{} {
 	if in == nil {
-		return nil
+		return []interface{}{}
 	}
 
-	d.SetId(fmt.Sprintf("%s-%s", in.SourceID, in.Name))
-	d.Set("name", in.Name)
-	d.Set("type", in.Type)
-	d.Set("object_type", in.ObjectType)
-	d.Set("source_id", in.SourceID)
-	d.Set("description", in.Description)
-	d.Set("display_attribute", in.DisplayAttribute)
-	d.Set("entitlement", in.Entitlement)
-	d.Set("identity_attribute", in.IdentityAttribute)
-	d.Set("managed", in.Managed)
-	d.Set("minable", in.Minable)
-	d.Set("multi", in.Multi)
-	return nil
+	out := make([]interface{}, 0, len(in))
+
+	for i := range in {
+		var obj = make(map[string]interface{})
+		obj["name"] = in[i].Name
+		obj["type"] = in[i].Type
+		obj["description"] = in[i].Description
+		obj["is_multi_valued"] = in[i].IsMultiValued
+		obj["is_entitlement"] = in[i].IsEntitlement
+		obj["is_group"] = in[i].IsGroup
+		if in[i].Schema != nil {
+			v, ok := obj["schema"].([]interface{})
+			if !ok {
+				v = []interface{}{}
+			}
+			var newInSchema []*Schema
+			newInSchema = append(newInSchema, in[i].Schema)
+			obj["schema"] = flattenSourceSchema(newInSchema, v)[0]
+		}
+		out = append(out, obj)
+	}
+	return out
 }
 
 // Expanders
-
-func expandAccountSchemaAttribute(in *schema.ResourceData) (*AccountSchemaAttribute, error) {
-	obj := AccountSchemaAttribute{}
-	if in == nil {
-		return nil, fmt.Errorf("[ERROR] Expanding Account Schema Attribute: Schema Resource data is nil")
+func expandAccountSchemaAttributes(p []interface{}) []*AccountSchemaAttribute {
+	if len(p) == 0 || p[0] == nil {
+		return []*AccountSchemaAttribute{}
 	}
-	if v := in.Id(); len(v) > 0 {
-		obj.ID = v
-	}
+	out := make([]*AccountSchemaAttribute, 0, len(p))
+	for i := range p {
+		obj := AccountSchemaAttribute{}
+		in := p[i].(map[string]interface{})
+		obj.Name = in["name"].(string)
+		obj.Type = in["type"].(string)
+		obj.Description = in["description"].(string)
 
-	obj.Name = in.Get("name").(string)
-	obj.Type = in.Get("type").(string)
-	obj.ObjectType = in.Get("object_type").(string)
-	obj.SourceID = in.Get("source_id").(string)
-	obj.Description = in.Get("description").(string)
+		if v, ok := in["is_multi_valued"].(bool); ok {
+			obj.IsMultiValued = v
+		}
+		if v, ok := in["is_entitlement"].(bool); ok {
+			obj.IsEntitlement = v
+		}
 
-	if v, ok := in.Get("display_attribute").(bool); ok {
-		obj.DisplayAttribute = v
-	}
-
-	if v, ok := in.Get("entitlement").(bool); ok {
-		obj.Entitlement = v
-	}
-
-	if v, ok := in.Get("identity_attribute").(bool); ok {
-		obj.IdentityAttribute = v
-	}
-
-	if v, ok := in.Get("managed").(bool); ok {
-		obj.Managed = v
+		if v, ok := in["is_group"].(bool); ok {
+			obj.IsGroup = v
+		}
+		if v, ok := in["schema"].(*Schema); ok {
+			var vList []interface{}
+			vList[0] = v
+			obj.Schema = expandSourceSchema(vList)[0]
+		}
 	}
 
-	if v, ok := in.Get("minable").(bool); ok {
-		obj.Minable = v
-	}
-
-	if v, ok := in.Get("multi").(bool); ok {
-		obj.Multi = v
-	}
-
-	return &obj, nil
+	return out
 }
 
 func getAccountSchemaAttribute(accountSchema *AccountSchema, name string) *AccountSchemaAttribute {
