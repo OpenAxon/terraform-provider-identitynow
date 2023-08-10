@@ -22,13 +22,30 @@ func flattenAccountSchemaAttributes(in []*AccountSchemaAttribute, p []interface{
 			if !ok {
 				v = []interface{}{}
 			}
-			var newInSchema []*Schema
-			newInSchema = append(newInSchema, in[i].Schema)
-			obj["schema"] = flattenSourceSchema(newInSchema, v)[0]
+			obj["schema"] = flattenAccountSchemaAttributesSchema(in[i].Schema, v)
 		}
 		out = append(out, obj)
 	}
 	return out
+}
+
+func flattenAccountSchemaAttributesSchema(in *AccountSchemaAttributeSchema, p []interface{}) interface{} {
+	var obj map[string]interface{}
+	if len(p) == 0 || p[0] == nil {
+		obj = make(map[string]interface{})
+	} else {
+		obj = p[0].(map[string]interface{})
+	}
+
+	if in == nil {
+		return []interface{}{}
+	}
+
+	obj["type"] = in.Type
+	obj["id"] = in.ID
+	obj["name"] = in.Name
+
+	return []interface{}{obj}
 }
 
 // Expanders
@@ -42,7 +59,9 @@ func expandAccountSchemaAttributes(p []interface{}) []*AccountSchemaAttribute {
 		in := p[i].(map[string]interface{})
 		obj.Name = in["name"].(string)
 		obj.Type = in["type"].(string)
-		obj.Description = in["description"].(string)
+		if v, ok := in["description"].(string); ok {
+			obj.Description = v
+		}
 
 		if v, ok := in["is_multi_valued"].(bool); ok {
 			obj.IsMultiValued = v
@@ -54,14 +73,28 @@ func expandAccountSchemaAttributes(p []interface{}) []*AccountSchemaAttribute {
 		if v, ok := in["is_group"].(bool); ok {
 			obj.IsGroup = v
 		}
-		if v, ok := in["schema"].(*Schema); ok {
-			var vList []interface{}
-			vList[0] = v
-			obj.Schema = expandSourceSchema(vList)[0]
+		if v, ok := in["schema"].([]interface{}); ok && len(v) > 0 {
+			obj.Schema = expandAccountSchemaAttributesSchema(v)
 		}
+		out = append(out, &obj)
 	}
 
 	return out
+}
+
+func expandAccountSchemaAttributesSchema(p []interface{}) *AccountSchemaAttributeSchema {
+	obj := AccountSchemaAttributeSchema{}
+
+	if len(p) == 0 || p[0] == nil {
+		return &obj
+	}
+	in := p[0].(map[string]interface{})
+
+	obj.ID = in["id"].(string)
+	obj.Name = in["name"].(string)
+	obj.Type = in["type"].(string)
+
+	return &obj
 }
 
 func getAccountSchemaAttribute(accountSchema *AccountSchema, name string) *AccountSchemaAttribute {

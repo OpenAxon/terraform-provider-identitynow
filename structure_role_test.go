@@ -38,22 +38,24 @@ func init() {
 		Requestable: &FALSE,
 	}
 	testRoleInterface = map[string]interface{}{
-		//"accessProfiles": []map[string]interface{}{
-		//	{
-		//		"id":   "2c918088747654398948078d29f2e46",
-		//		"name": "Test Developer",
-		//		"type": "ACCESS_PROFILE",
-		//	},
-		//	{
-		//		"id":   "2c918009437654398948078d29f2e46",
-		//		"name": "Test Operator",
-		//		"type": "ACCESS_PROFILE",
-		//	},
-		//},
-		"owner": map[string]interface{}{
-			"id":   "2c9180887412345678948078d29f2e46",
-			"name": "SRE Test",
-			"type": "IDENTITY",
+		"access_profiles": []interface{}{
+			map[string]interface{}{
+				"id":   "2c918088747654398948078d29f2e46",
+				"name": "Test Developer",
+				"type": "ACCESS_PROFILE",
+			},
+			map[string]interface{}{
+				"id":   "2c918009437654398948078d29f2e46",
+				"name": "Test Operator",
+				"type": "ACCESS_PROFILE",
+			},
+		},
+		"owner": []interface{}{
+			map[string]interface{}{
+				"id":   "2c9180887412345678948078d29f2e46",
+				"name": "SRE Test",
+				"type": "IDENTITY",
+			},
 		},
 		"description": "test description",
 		"enabled":     true,

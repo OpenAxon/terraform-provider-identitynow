@@ -23,7 +23,7 @@ func roleFields() map[string]*schema.Schema {
 				Schema: sourceOwnerFields(),
 			},
 		},
-		"accessProfiles": {
+		"access_profiles": {
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Resource{

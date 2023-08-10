@@ -17,11 +17,17 @@ type AccountSchema struct {
 }
 
 type AccountSchemaAttribute struct {
-	Description   string  `json:"description,omitempty"`
-	IsEntitlement bool    `json:"isEntitlement,omitempty"`
-	IsMultiValued bool    `json:"isMultiValued,omitempty"`
-	IsGroup       bool    `json:"isGroup,omitempty"`
-	Name          string  `json:"name"`
-	Type          string  `json:"type,omitempty"`
-	Schema        *Schema `json:"schema,omitempty"`
+	Description   string                        `json:"description,omitempty"`
+	IsEntitlement bool                          `json:"isEntitlement,omitempty"`
+	IsMultiValued bool                          `json:"isMultiValued,omitempty"`
+	IsGroup       bool                          `json:"isGroup,omitempty"`
+	Name          string                        `json:"name"`
+	Type          string                        `json:"type,omitempty"`
+	Schema        *AccountSchemaAttributeSchema `json: "schema,omitempty"`
+}
+
+type AccountSchemaAttributeSchema struct {
+	Type string `json:"type,omitempty"`
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
 }

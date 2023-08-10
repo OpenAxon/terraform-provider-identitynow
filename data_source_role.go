@@ -15,7 +15,7 @@ func dataSourceRole() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"accessProfiles": {
+			"access_profiles": {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
