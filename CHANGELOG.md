@@ -1,3 +1,6 @@
+## 0.4.0
+* upgrade: upgrade cc api
+* 
 ## 0.3.4
 
 BUG FIXES:
