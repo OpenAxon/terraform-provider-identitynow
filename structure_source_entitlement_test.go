@@ -7,50 +7,46 @@ import (
 )
 
 var (
-	testEntitlementConf      *Items
+	testEntitlementConf      []*SourceEntitlement
 	testEntitlementInterface map[string]interface{}
 )
 
 func init() {
-	testEntitlementConf = &Items{
-		SourceID:          "2c9180887412345678948078d29f2e46",
-		SourceName:        "Active Directory test",
-		Attribute:         "memberOf",
-		CreatedTime:       nil,
-		DeletedTime:       "05/21/2020",
-		Description:       "test description",
-		DirectPermissions: []interface{}{"test"},
-		DisplayName:       "test name",
-		DisplayableName:   "test name",
-		LastModifiedTime:  "06/20/2020",
-		OwnerID:           "1234",
-		OwnerUID:          "123a4",
-		Privileged:        false,
-		Schema:            "group",
-		Value:             "CN=example,OU=Groups,DC=test,DC=com",
+	testEntitlementConf = []*SourceEntitlement{
+		{
+			Source: &SourceInfo{
+				ID:   "2c9180887412345678948078d29f2e46",
+				Name: "Active Directory test",
+			},
+			Attribute:              "memberOf",
+			Created:                nil,
+			Description:            "test description",
+			Name:                   "test name",
+			Modified:               "06/20/2020",
+			Owner:                  nil,
+			Privileged:             false,
+			SourceSchemaObjectType: "group",
+			Value:                  "CN=example,OU=Groups,DC=test,DC=com",
+		},
 	}
-	testEntitlementInterface = map[string]interface{}{
-		"source_id":          "2c9180887412345678948078d29f2e46",
-		"source_name":        "Active Directory test",
-		"attribute":          "memberOf",
-		"deleted_time":       "05/21/2020",
-		"description":        "test description",
-		"direct_permissions": []interface{}{"test"},
-		"display_name":       "test name",
-		"displayable_name":   "test name",
-		"last_modified_time": "06/20/2020",
-		"owner_id":           "1234",
-		"owner_uid":          "123a4",
-		"privileged":         false,
-		"schema":             "group",
-		"value":              "CN=example,OU=Groups,DC=test,DC=com",
-	}
+	testEntitlementInterface =
+		map[string]interface{}{
+			"source_name":               "Active Directory test",
+			"source_id":                 "2c9180887412345678948078d29f2e46",
+			"attribute":                 "memberOf",
+			"description":               "test description",
+			"name":                      "test name",
+			"modified":                  "06/20/2020",
+			"privileged":                false,
+			"source_schema_object_type": "group",
+			"value":                     "CN=example,OU=Groups,DC=test,DC=com",
+		}
 }
 
 func TestFlattenSourceEntitlement(t *testing.T) {
 
 	cases := []struct {
-		Input          *Items
+		Input          []*SourceEntitlement
 		ExpectedOutput map[string]interface{}
 	}{
 		{
@@ -61,7 +57,7 @@ func TestFlattenSourceEntitlement(t *testing.T) {
 
 	for _, tc := range cases {
 		output := schema.TestResourceDataRaw(t, sourceEntitlementFields(), tc.ExpectedOutput)
-		err := flattenSourceEntitlement(output, tc.Input)
+		err := flattenSourceEntitlement(output, tc.Input[0])
 		if err != nil {
 			t.Fatalf("[ERROR] on flattener: %#v", err)
 		}

@@ -33,7 +33,7 @@ func dataSourceSourceEntitlementRead(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 
-	entitlement := getEntitlement(sourceEntitlements.Items, d.Get("name").(string))
+	entitlement := getEntitlement(sourceEntitlements, d.Get("name").(string))
 
 	return flattenSourceEntitlement(d, entitlement)
 }

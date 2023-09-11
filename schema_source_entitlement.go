@@ -16,19 +16,19 @@ func sourceEntitlementFields() map[string]*schema.Schema {
 		},
 		"source_name": {
 			Type:        schema.TypeString,
-			Computed:    true,
+			Required:    true,
 			Description: "source name",
+		},
+		"source_schema_object_type": {
+			Type:     schema.TypeString,
+			Computed: true,
 		},
 		"attribute": {
 			Type:        schema.TypeString,
 			Computed:    true,
 			Description: "attribute",
 		},
-		"created_time": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"deleted_time": {
+		"created": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
@@ -36,30 +36,11 @@ func sourceEntitlementFields() map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
-		"direct_permissions": {
-			Type:     schema.TypeList,
-			Computed: true,
-			Elem: &schema.Schema{
-				Type: schema.TypeString,
-			},
-		},
-		"display_name": {
+		"modified": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
-		"displayable_name": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"last_modified_time": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"owner_id": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"owner_uid": {
+		"owner": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
@@ -67,8 +48,8 @@ func sourceEntitlementFields() map[string]*schema.Schema {
 			Type:     schema.TypeBool,
 			Computed: true,
 		},
-		"schema": {
-			Type:     schema.TypeString,
+		"requestable": {
+			Type:     schema.TypeBool,
 			Computed: true,
 		},
 		"value": {

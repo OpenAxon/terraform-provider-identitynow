@@ -2,12 +2,11 @@ package main
 
 import "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
-func accountSchemaAttributeFields() map[string]*schema.Schema {
+func accountSchemaAttributesFields() map[string]*schema.Schema {
 	s := map[string]*schema.Schema{
 		"name": {
 			Type:     schema.TypeString,
 			Required: true,
-			ForceNew: true,
 		},
 
 		"type": {
@@ -15,48 +14,30 @@ func accountSchemaAttributeFields() map[string]*schema.Schema {
 			Optional: true,
 		},
 
-		"object_type": {
-			Type:     schema.TypeString,
-			Required: true,
-		},
-
-		"source_id": {
-			Type:     schema.TypeString,
-			Required: true,
-			ForceNew: true,
-		},
-
 		"description": {
 			Type:     schema.TypeString,
 			Optional: true,
 		},
 
-		"display_attribute": {
+		"schema": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: sourceSchemaFields(),
+			},
+		},
+
+		"is_group": {
 			Type:     schema.TypeBool,
 			Optional: true,
 		},
 
-		"identity_attribute": {
+		"is_multi_valued": {
 			Type:     schema.TypeBool,
 			Optional: true,
 		},
 
-		"managed": {
-			Type:     schema.TypeBool,
-			Optional: true,
-		},
-
-		"minable": {
-			Type:     schema.TypeBool,
-			Optional: true,
-		},
-
-		"multi": {
-			Type:     schema.TypeBool,
-			Optional: true,
-		},
-
-		"entitlement": {
+		"is_entitlement": {
 			Type:     schema.TypeBool,
 			Optional: true,
 		},

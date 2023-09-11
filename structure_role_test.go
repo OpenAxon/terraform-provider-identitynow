@@ -15,32 +15,52 @@ func init() {
 	TRUE := true
 	FALSE := false
 	testRoleConf = &Role{
-		AccessProfileIds:             []string{"1234", "5678"},
-		ApprovalSchemes:              "manager",
-		DeniedCommentsRequired:       &TRUE,
-		Description:                  "test description",
-		Disabled:                     &FALSE,
-		DisplayName:                  "test name",
-		IdentityCount:                1,
-		Name:                         "test name",
-		Owner:                        "test_identity",
-		RequestCommentsRequired:      &FALSE,
-		Requestable:                  &FALSE,
-		RevokeRequestApprovalSchemes: "test",
+		Description: "test description",
+		Enabled:     &TRUE,
+		Name:        "test name",
+		RoleOwner: &ObjectInfo{
+			ID:   "2c9180887412345678948078d29f2e46",
+			Name: "SRE Test",
+			Type: "IDENTITY",
+		},
+		AccessProfiles: []*ObjectInfo{
+			{
+				ID:   "2c918088747654398948078d29f2e46",
+				Name: "Test Developer",
+				Type: "ACCESS_PROFILE",
+			},
+			{
+				ID:   "2c918009437654398948078d29f2e46",
+				Name: "Test Operator",
+				Type: "ACCESS_PROFILE",
+			},
+		},
+		Requestable: &FALSE,
 	}
 	testRoleInterface = map[string]interface{}{
-		"access_profile_ids":              []interface{}{"1234", "5678"},
-		"approval_schemes":                "manager",
-		"denied_comments_required":        true,
-		"description":                     "test description",
-		"disabled":                        false,
-		"display_name":                    "test name",
-		"identity_count":                  1,
-		"name":                            "test name",
-		"owner":                           "test_identity",
-		"request_comments_required":       false,
-		"requestable":                     false,
-		"revoke_request_approval_schemes": "test",
+		"access_profiles": []interface{}{
+			map[string]interface{}{
+				"id":   "2c918088747654398948078d29f2e46",
+				"name": "Test Developer",
+				"type": "ACCESS_PROFILE",
+			},
+			map[string]interface{}{
+				"id":   "2c918009437654398948078d29f2e46",
+				"name": "Test Operator",
+				"type": "ACCESS_PROFILE",
+			},
+		},
+		"owner": []interface{}{
+			map[string]interface{}{
+				"id":   "2c9180887412345678948078d29f2e46",
+				"name": "SRE Test",
+				"type": "IDENTITY",
+			},
+		},
+		"description": "test description",
+		"enabled":     true,
+		"name":        "test name",
+		"requestable": false,
 	}
 }
 
