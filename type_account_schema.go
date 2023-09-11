@@ -23,7 +23,7 @@ type AccountSchemaAttribute struct {
 	IsGroup       bool                          `json:"isGroup,omitempty"`
 	Name          string                        `json:"name"`
 	Type          string                        `json:"type,omitempty"`
-	Schema        *AccountSchemaAttributeSchema `json: "schema,omitempty"`
+	Schema        *AccountSchemaAttributeSchema `json:"schema,omitempty"`
 }
 
 type AccountSchemaAttributeSchema struct {

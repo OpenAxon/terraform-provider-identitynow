@@ -175,7 +175,7 @@ func (c *Client) GetAccessProfile(ctx context.Context, id string) (*AccessProfil
 }
 
 func (c *Client) GetSourceEntitlements(ctx context.Context, id string) ([]*SourceEntitlement, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/entitlement?filters=source.id eq \"%s\"", c.BaseURL, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/entitlements?filters=source.id", c.BaseURL)+url.QueryEscape(" eq ")+fmt.Sprintf("\"%s\"", id), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -446,34 +446,45 @@ func (c *Client) GetAccountSchema(ctx context.Context, sourceId string, id strin
 		log.Fatal(err)
 		return nil, err
 	}
+	res.SourceID = sourceId
 
 	return &res, nil
 }
 
-func (c *Client) CreateAccountSchema(ctx context.Context, accountSchema *AccountSchema) (*AccountSchema, error) {
-	body, err := json.Marshal(&accountSchema)
-	if err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v3/sources/%s/schemas", c.BaseURL, accountSchema.SourceID), bytes.NewBuffer(body))
-	if err != nil {
-		log.Printf("New request failed:%+v\n", err)
-		return nil, err
-	}
-
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	req.Header.Set("Accept", "application/json; charset=utf-8")
-
-	req = req.WithContext(ctx)
-	res := AccountSchema{}
-	if err := c.sendRequest(req, &res); err != nil {
-		log.Printf("Failed Account Schema Attribute creation. response:%+v\n", res)
-		log.Fatal(err)
-		return nil, err
-	}
-
-	return &res, nil
-}
+//func (c *Client) CreateAccountSchema(ctx context.Context, accountSchema *AccountSchema) (*AccountSchema, error) {
+//for _, value := range updateAccountSchema {
+//	log.Printf("arrBody: %+v, value: %+v", value, value.Value)
+//}
+//log.Printf("arrBody type: %+v", reflect.TypeOf(updateAccountSchema))
+//body, err := json.Marshal(&updateAccountSchema)
+//log.Printf("body: %+v", string(body))
+//
+//if err != nil {
+//	return nil, err
+//}
+//req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/sources/%s/schemas/%s", c.BaseURL, sourceId, schemaId), bytes.NewBuffer(body))
+//if err != nil {
+//	log.Printf("New request failed:%+v\n", err)
+//	return nil, err
+//}
+//
+//req.Header.Set("Content-Type", "application/json-patch+json; charset=utf-8")
+//req.Header.Set("Accept", "application/json; charset=utf-8")
+//
+//req = req.WithContext(ctx)
+//res := AccountSchema{}
+//if err := c.sendRequest(req, &res); err != nil {
+//	log.Printf("get body: %+v\n", req.GetBody)
+//
+//	log.Printf("Failed Account Schema Attribute creation. response:%+v\n", res)
+//	log.Fatal(err)
+//	return nil, err
+//}
+//for _, value := range updateAccountSchema {
+//	log.Printf("arrBody: %+v, value: %+v", value, value.Value)
+//}
+//return &res, nil
+//}
 
 func (c *Client) UpdateAccountSchema(ctx context.Context, accountSchema *AccountSchema) (*AccountSchema, error) {
 	body, err := json.Marshal(&accountSchema)

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"log"
 )
 
 // Flatteners
@@ -12,7 +13,7 @@ func flattenAccountSchema(d *schema.ResourceData, in *AccountSchema) error {
 		return nil
 	}
 
-	d.Set("name", in.ID)
+	d.SetId(in.ID)
 	d.Set("name", in.Name)
 	d.Set("source_id", in.SourceID)
 	d.Set("schema_id", in.ID)
@@ -31,6 +32,8 @@ func flattenAccountSchema(d *schema.ResourceData, in *AccountSchema) error {
 
 		d.Set("attributes", flattenAccountSchemaAttributes(in.Attributes, v))
 	}
+
+	log.Printf("d *schema.ResourceData in flatten: %+v", d)
 	return nil
 }
 

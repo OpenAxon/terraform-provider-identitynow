@@ -22,26 +22,40 @@ func resourceAccountSchema() *schema.Resource {
 }
 
 func resourceAccountSchemaCreate(d *schema.ResourceData, m interface{}) error {
-	attribute, err := expandAccountSchema(d)
+	accountSchema, err := expandAccountSchema(d)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Creating Account Schema Attribute %s", attribute.Name)
+	log.Printf("[INFO] Creating Account Schema Attribute %v", accountSchema.Attributes)
 
 	client, err := m.(*Config).IdentityNowClient()
 	if err != nil {
 		return err
 	}
-
-	newAttribute, err := client.CreateAccountSchema(context.Background(), attribute)
+	newAccountSchema, err := client.GetAccountSchema(context.Background(), accountSchema.SourceID, accountSchema.ID)
+	if err != nil {
+		// non-panicking type assertion, 2nd arg is boolean indicating type match
+		_, notFound := err.(*NotFoundError)
+		if notFound {
+			log.Printf("Source ID %s not found.", accountSchema.SourceID)
+			d.SetId("")
+			return nil
+		}
+		return err
+	}
+	newAccountSchema.SourceID = accountSchema.SourceID
+	for i := range accountSchema.Attributes {
+		newAccountSchema.Attributes = append(newAccountSchema.Attributes, accountSchema.Attributes[i])
+	}
+	accountSchemaResponse, err := client.UpdateAccountSchema(context.Background(), newAccountSchema)
 	if err != nil {
 		return err
 	}
 
-	newAttribute.SourceID = attribute.SourceID
+	accountSchemaResponse.SourceID = accountSchema.SourceID
 
-	err = flattenAccountSchema(d, newAttribute)
+	err = flattenAccountSchema(d, accountSchemaResponse)
 	if err != nil {
 		return err
 	}
@@ -76,7 +90,6 @@ func resourceAccountSchemaRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	accountSchema.SourceID = sourceId
-
 	err = flattenAccountSchema(d, accountSchema)
 	if err != nil {
 		return err
@@ -86,18 +99,18 @@ func resourceAccountSchemaRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceAccountSchemaUpdate(d *schema.ResourceData, m interface{}) error {
+	updatedAccountSchema, err := expandAccountSchema(d)
+	if err != nil {
+		return err
+	}
+
 	log.Printf("[INFO] Updating %s for Account Schema for source ID %s", d.Get("name").(string), d.Get("source_id").(string))
 	client, err := m.(*Config).IdentityNowClient()
 	if err != nil {
 		return err
 	}
 
-	updatedAttribute, err := expandAccountSchema(d)
-	if err != nil {
-		return err
-	}
-
-	_, err = client.UpdateAccountSchema(context.Background(), updatedAttribute)
+	_, err = client.UpdateAccountSchema(context.Background(), updatedAccountSchema)
 	if err != nil {
 		return err
 	}

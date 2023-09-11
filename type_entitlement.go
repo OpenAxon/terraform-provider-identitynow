@@ -13,7 +13,6 @@ type SourceEntitlement struct {
 	Owner                  interface{}   `json:"owner,omitempty"`
 	DirectPermissions      []interface{} `json:"directPermissions,omitempty"`
 	Segments               []interface{} `json:"segments,omitempty"`
-	ManuallyUpdatedFields  []interface{} `json:"manuallyUpdatedFields,omitempty"`
 	Modified               interface{}   `json:"modified,omitempty"`
 	Created                interface{}   `json:"created,omitempty"`
 	ID                     string        `json:"id"`
