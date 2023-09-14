@@ -8,7 +8,7 @@ type AccountSchema struct {
 	Features           []interface{}             `json:"features,omitempty"`
 	Configuration      interface{}               `json:"configuration,omitempty"`
 	HierarchyAttribute string                    `json:"hierarchyAttribute,omitempty"`
-	IncludePermissions *bool                     `json:"includePermissions,omitempty"`
+	IncludePermissions bool                      `json:"includePermissions,omitempty"`
 	ID                 string                    `json:"id"`
 	Name               string                    `json:"name"`
 	Created            string                    `json:"created,omitempty"`
@@ -18,9 +18,9 @@ type AccountSchema struct {
 
 type AccountSchemaAttribute struct {
 	Description   string                        `json:"description,omitempty"`
-	IsEntitlement *bool                         `json:"isEntitlement,omitempty"`
-	IsMultiValued *bool                         `json:"isMultiValued,omitempty"`
-	IsGroup       *bool                         `json:"isGroup,omitempty"`
+	IsEntitlement bool                          `json:"isEntitlement,omitempty"`
+	IsMultiValued bool                          `json:"isMultiValued,omitempty"`
+	IsGroup       bool                          `json:"isGroup,omitempty"`
 	Name          string                        `json:"name"`
 	Type          string                        `json:"type,omitempty"`
 	Schema        *AccountSchemaAttributeSchema `json:"schema,omitempty"`

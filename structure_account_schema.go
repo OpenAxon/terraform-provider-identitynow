@@ -56,7 +56,7 @@ func expandAccountSchema(in *schema.ResourceData) (*AccountSchema, error) {
 	obj.Modified = in.Get("modified").(string)
 	obj.Created = in.Get("created").(string)
 	if v, ok := in.Get("include_permissions").(bool); ok {
-		obj.IncludePermissions = &v
+		obj.IncludePermissions = v
 	}
 	if v, ok := in.Get("attributes").([]interface{}); ok && len(v) > 0 {
 		obj.Attributes = expandAccountSchemaAttributes(v)

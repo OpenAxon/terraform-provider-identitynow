@@ -64,14 +64,14 @@ func expandAccountSchemaAttributes(p []interface{}) []*AccountSchemaAttribute {
 		}
 
 		if v, ok := in["is_multi_valued"].(bool); ok {
-			obj.IsMultiValued = &v
+			obj.IsMultiValued = v
 		}
 		if v, ok := in["is_entitlement"].(bool); ok {
-			obj.IsEntitlement = &v
+			obj.IsEntitlement = v
 		}
 
 		if v, ok := in["is_group"].(bool); ok {
-			obj.IsGroup = &v
+			obj.IsGroup = v
 		}
 		if v, ok := in["schema"].([]interface{}); ok && len(v) > 0 {
 			obj.Schema = expandAccountSchemaAttributesSchema(v)
