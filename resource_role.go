@@ -14,6 +14,10 @@ func resourceRole() *schema.Resource {
 		Update: resourceRoleUpdate,
 		Delete: resourceRoleDelete,
 
+		Importer: &schema.ResourceImporter{
+			State: resourceRoleImport,
+		},
+
 		Schema: roleFields(),
 	}
 }

@@ -27,8 +27,6 @@ func resourceAccountSchemaCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Printf("[INFO] Creating Account Schema Attribute %v", accountSchema.Attributes)
-
 	client, err := m.(*Config).IdentityNowClient()
 	if err != nil {
 		return err
@@ -48,6 +46,21 @@ func resourceAccountSchemaCreate(d *schema.ResourceData, m interface{}) error {
 	for i := range accountSchema.Attributes {
 		newAccountSchema.Attributes = append(newAccountSchema.Attributes, accountSchema.Attributes[i])
 	}
+	seen := make(map[*AccountSchemaAttribute]bool)
+	result := []*AccountSchemaAttribute{}
+
+	// Loop through the slice, adding elements to the map if they haven't been seen before
+	for _, val := range newAccountSchema.Attributes {
+		if _, ok := seen[val]; !ok {
+			seen[val] = true
+			result = append(result, val)
+			fmt.Printf("seen: %v", seen)
+		}
+	}
+	newAccountSchema.Attributes = result
+	newAccountSchema.ID = accountSchema.SourceID
+	log.Printf("[INFO] Creating Account Schema Attribute for source %+v\n", newAccountSchema.SourceID)
+
 	accountSchemaResponse, err := client.UpdateAccountSchema(context.Background(), newAccountSchema)
 	if err != nil {
 		return err
