@@ -41,7 +41,7 @@ func identityFields() map[string]*schema.Schema {
 
 		"attributes": {
 			Type:     schema.TypeList,
-			Required: true,
+			Optional: true,
 			MaxItems: 1,
 			Elem: &schema.Resource{
 				Schema: identityAttributesFields(),

@@ -367,11 +367,13 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 }
 
 func (c *Client) GetIdentity(ctx context.Context, alias string) ([]*Identity, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/identities?filters=alias eq %s", c.BaseURL, alias), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/identities?filters=alias", c.BaseURL)+url.QueryEscape(" eq ")+fmt.Sprintf("\"%s\"", alias), nil)
+
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
 	}
+	log.Printf("GetIdentity Request is: %+v\n", req)
 
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
@@ -383,6 +385,8 @@ func (c *Client) GetIdentity(ctx context.Context, alias string) ([]*Identity, er
 		log.Fatal(err)
 		return nil, err
 	}
+
+	log.Printf("GetIdentity Response is: %+v\n", res)
 
 	return res, nil
 }
