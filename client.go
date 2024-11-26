@@ -366,8 +366,8 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 	return &res, nil
 }
 
-func (c *Client) GetIdentity(ctx context.Context, identityId string) ([]*Identity, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/accounts?identityId=%s", c.BaseURL, identityId), nil)
+func (c *Client) GetIdentity(ctx context.Context, alias string) ([]*Identity, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/identities?filters=alias eq %s", c.BaseURL, alias), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
