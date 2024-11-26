@@ -78,12 +78,12 @@ func resourceAccessProfileUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	updatedAccessProfile, err := expandAccessProfile(d)
+	updatedAccessProfile, id, err := expandUpdateAccessProfile(d)
 	if err != nil {
 		return err
 	}
 
-	_, err = client.UpdateAccessProfile(context.Background(), updatedAccessProfile, d.Id())
+	_, err = client.UpdateAccessProfile(context.Background(), updatedAccessProfile, id)
 	if err != nil {
 		return err
 	}

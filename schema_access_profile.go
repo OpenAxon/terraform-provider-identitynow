@@ -17,53 +17,33 @@ func accessProfileFields() map[string]*schema.Schema {
 			Description: "Access Profile description",
 		},
 
-		"source_id": {
-			Type:        schema.TypeInt,
-			Required:    true,
-			Description: "Source Id that Access Profile is going to create for",
-		},
-
-		"source_name": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-
-		"owner_id": {
-			Type:     schema.TypeInt,
+		"source": {
+			Type:     schema.TypeList,
 			Required: true,
-		},
-
-		"entitlements": {
-			Type:        schema.TypeList,
-			Optional:    true,
-			Description: "Access Profile Entitlements.",
-			Elem: &schema.Schema{
-				Type: schema.TypeString,
+			MaxItems: 1,
+			Elem: &schema.Resource{
+				Schema: accessProfileSourceFields(),
 			},
 		},
 
-		"denied_comments_required": {
-			Type:        schema.TypeBool,
-			Optional:    true,
-			Description: "Access Profile Denied Comments Required",
+		"owner": {
+			Type:     schema.TypeList,
+			Required: true,
+			MaxItems: 1,
+			Elem: &schema.Resource{
+				Schema: sourceOwnerFields(),
+			},
 		},
 
-		"approval_schemes": {
-			Type:     schema.TypeString,
+		"entitlements": {
+			Type:     schema.TypeList,
 			Optional: true,
+			Elem: &schema.Resource{
+				Schema: accessProfileEntitlementsFields(),
+			},
 		},
 
-		"disabled": {
-			Type:     schema.TypeBool,
-			Optional: true,
-		},
-
-		"protected": {
-			Type:     schema.TypeBool,
-			Computed: true,
-		},
-
-		"request_comments_required": {
+		"enabled": {
 			Type:     schema.TypeBool,
 			Optional: true,
 		},
@@ -72,11 +52,52 @@ func accessProfileFields() map[string]*schema.Schema {
 			Type:     schema.TypeBool,
 			Computed: true,
 		},
+	}
+	return s
+}
 
-		"revoke_request_approval_schemes": {
-			Type:     schema.TypeString,
-			Optional: true,
+func accessProfileSourceFields() map[string]*schema.Schema {
+	s := map[string]*schema.Schema{
+		"id": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Id of source",
+		},
+		"name": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Name of source",
+		},
+		"type": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Default:     "SOURCE",
+			Description: "Type of source",
 		},
 	}
+
+	return s
+}
+
+func accessProfileEntitlementsFields() map[string]*schema.Schema {
+	s := map[string]*schema.Schema{
+		"id": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Id of entitlement",
+		},
+		"name": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "Name of entitlement",
+		},
+		"type": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Default:     "ENTITLEMENT",
+			Description: "Type of entitlement",
+		},
+	}
+
 	return s
 }
