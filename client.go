@@ -366,8 +366,8 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 	return &res, nil
 }
 
-func (c *Client) GetIdentity(ctx context.Context, alias string) (*Identity, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v2/identities/%s", c.BaseURL, alias), nil)
+func (c *Client) GetIdentity(ctx context.Context, identityId string) ([]*Identity, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/accounts?identityId=%s", c.BaseURL, identityId), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -377,14 +377,14 @@ func (c *Client) GetIdentity(ctx context.Context, alias string) (*Identity, erro
 
 	req = req.WithContext(ctx)
 
-	res := Identity{}
+	var res []*Identity
 	if err := c.sendRequest(req, &res); err != nil {
 		log.Printf("Failed Identity get response:%+v\n", res)
 		log.Fatal(err)
 		return nil, err
 	}
 
-	return &res, nil
+	return res, nil
 }
 
 func (c *Client) GetAccountAggregationSchedule(ctx context.Context, id string) (*AccountAggregationSchedule, error) {
