@@ -156,7 +156,7 @@ func (c *Client) DeleteSource(ctx context.Context, source *Source) error {
 }
 
 func (c *Client) GetAccessProfile(ctx context.Context, id string) (*AccessProfile, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/access-profiles/%s", c.BaseURL, id), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -199,7 +199,7 @@ func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessP
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v2/access-profiles", c.BaseURL), bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v3/access-profiles", c.BaseURL), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -220,12 +220,12 @@ func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessP
 	return &res, nil
 }
 
-func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessProfile, id string) (*AccessProfile, error) {
+func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile []*UpdateAccessProfile, id interface{}) (*AccessProfile, error) {
 	body, err := json.Marshal(&accessProfile)
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, id), bytes.NewBuffer(body))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/access-profiles/%s", c.BaseURL, id), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
@@ -247,7 +247,7 @@ func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessP
 }
 
 func (c *Client) DeleteAccessProfile(ctx context.Context, accessProfile *AccessProfile) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, accessProfile.ID), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/v3/access-profiles/%s", c.BaseURL, accessProfile.ID), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return err
@@ -366,8 +366,8 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 	return &res, nil
 }
 
-func (c *Client) GetIdentity(ctx context.Context, identityId string) ([]*Identity, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/accounts?identityId=%s", c.BaseURL, identityId), nil)
+func (c *Client) GetIdentity(ctx context.Context, alias string) ([]*Identity, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/identities?filters=alias eq %s", c.BaseURL, alias), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err

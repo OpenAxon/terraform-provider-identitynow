@@ -28,64 +28,37 @@ func dataSourceAccessProfile() *schema.Resource {
 				Description: "Access Profile description",
 			},
 
-			"source_id": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "Source Id that Access Profile is going to create for",
-			},
-
-			"source_name": {
-				Type:     schema.TypeString,
+			"source": {
+				Type:     schema.TypeList,
 				Computed: true,
-			},
-
-			"owner_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
-
-			"entitlements": {
-				Type:        schema.TypeList,
-				Computed:    true,
-				Description: "Access Profile Entitlements.",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: accessProfileSourceFields(),
 				},
 			},
 
-			"denied_comments_required": {
-				Type:        schema.TypeBool,
-				Computed:    true,
-				Description: "Access Profile Denied Comments Required",
-			},
-
-			"approval_schemes": {
-				Type:     schema.TypeString,
+			"owner": {
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: sourceOwnerFields(),
+				},
 			},
 
-			"disabled": {
-				Type:     schema.TypeBool,
+			"entitlements": {
+				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: accessProfileEntitlementsFields(),
+				},
 			},
 
-			"protected": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
-
-			"request_comments_required": {
+			"enabled": {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
 
 			"requestable": {
 				Type:     schema.TypeBool,
-				Computed: true,
-			},
-
-			"revoke_request_approval_schemes": {
-				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},
