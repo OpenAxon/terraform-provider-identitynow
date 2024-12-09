@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -82,7 +83,7 @@ func (c *Client) GetSource(ctx context.Context, id string) (*Source, error) {
 	return &res, nil
 }
 
-func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, error) {
+func (c *Client) CreateSourceRequest(ctx context.Context, source *Source) (*Source, error) {
 	body, err := json.Marshal(&source)
 	if err != nil {
 		return nil, err
@@ -104,8 +105,99 @@ func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, err
 		log.Fatal(err)
 		return nil, err
 	}
+	return &res, nil
+}
+
+func (c *Client) AddConnectorAttributesToMicrosoftEntraSource(ctx context.Context, source *Source) (*Source, error) {
+	var updateSource []*UpdateSource
+	val := reflect.ValueOf(source.ConnectorAttributes).Elem()
+	typ := val.Type()
+
+	for i := 0; i < val.NumField(); i++ {
+		fieldName := typ.Field(i).Name
+		fieldValue := val.Field(i).Interface()
+
+		// Determine the correct type for Value
+		var value interface{}
+		switch v := fieldValue.(type) {
+		case []interface{}: // If it's already a list, use it as-is
+			value = v
+		case []string: // Special case for slices of specific types like string
+			var interfaceSlice []interface{}
+			for _, item := range v {
+				interfaceSlice = append(interfaceSlice, item)
+			}
+			value = interfaceSlice
+		case []int: // Handle slices of integers
+			var interfaceSlice []interface{}
+			for _, item := range v {
+				interfaceSlice = append(interfaceSlice, item)
+			}
+			value = interfaceSlice
+		default: // For single values, assign directly
+			value = v
+		}
+
+		newAttr := &UpdateSource{
+			Op:    "add",
+			Path:  "/connectorAttributes/" + fieldName,
+			Value: value,
+		}
+		updateSource = append(updateSource, newAttr)
+	}
+
+	body, err := json.MarshalIndent(updateSource, "", "  ")
+	if err != nil {
+		log.Printf("Failed to marshal updateSource: %v\n", err)
+		return nil, err
+	}
+	log.Printf("updateSource: %s\n", string(body))
+
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Failed to create HTTP request: %v\n", err)
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+	req = req.WithContext(ctx)
+
+	res := Source{}
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed updating source: %v\n", err)
+		return nil, err
+	}
 
 	return &res, nil
+}
+
+func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, error) {
+	var res *Source
+
+	if source.Connector == "Microsoft-Entra" {
+		newSource := *source
+		newSource.ConnectorAttributes = nil
+
+		// Create source request
+		sourceResponse, err := c.CreateSourceRequest(ctx, &newSource)
+		if err != nil {
+			return nil, err
+		}
+
+		// Add connector attributes
+		res, err = c.AddConnectorAttributesToMicrosoftEntraSource(ctx, sourceResponse)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		var err error
+		res, err = c.CreateSourceRequest(ctx, source)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return res, nil
 }
 
 func (c *Client) UpdateSource(ctx context.Context, source *Source) (*Source, error) {
