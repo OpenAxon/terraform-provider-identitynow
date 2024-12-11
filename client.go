@@ -109,64 +109,70 @@ func (c *Client) CreateSourceRequest(ctx context.Context, source *Source) (*Sour
 }
 
 func (c *Client) AddConnectorAttributesToMicrosoftEntraSource(ctx context.Context, source *Source) (*Source, error) {
+	if source == nil || source.ConnectorAttributes == nil {
+		return nil, fmt.Errorf("source or ConnectorAttributes cannot be nil")
+	}
+
 	var updateSource []*UpdateSource
+
+	// Reflect on the ConnectorAttributes struct
 	val := reflect.ValueOf(source.ConnectorAttributes).Elem()
 	typ := val.Type()
 
 	for i := 0; i < val.NumField(); i++ {
-		fieldName := typ.Field(i).Name
+		field := typ.Field(i)
+		fieldName := getJSONFieldName(field)
+		if fieldName == "" { // Skip fields without valid JSON tags
+			continue
+		}
+
 		fieldValue := val.Field(i).Interface()
 
-		// Determine the correct type for Value
-		var value interface{}
-		switch v := fieldValue.(type) {
-		case []interface{}: // If it's already a list, use it as-is
-			value = v
-		case []string: // Special case for slices of specific types like string
-			var interfaceSlice []interface{}
-			for _, item := range v {
-				interfaceSlice = append(interfaceSlice, item)
-			}
-			value = interfaceSlice
-		case []int: // Handle slices of integers
-			var interfaceSlice []interface{}
-			for _, item := range v {
-				interfaceSlice = append(interfaceSlice, item)
-			}
-			value = interfaceSlice
-		default: // For single values, assign directly
-			value = v
+		// Skip empty or nil values
+		if isEmptyValue(fieldValue) {
+			continue
 		}
 
-		newAttr := &UpdateSource{
+		// Create the update source object
+		updateSource = append(updateSource, &UpdateSource{
 			Op:    "add",
 			Path:  "/connectorAttributes/" + fieldName,
-			Value: value,
-		}
-		updateSource = append(updateSource, newAttr)
+			Value: fieldValue,
+		})
 	}
 
+	if len(updateSource) == 0 {
+		log.Printf("No attributes to update")
+		return source, nil // Return the original source if nothing to update
+	}
+
+	// Marshal the updateSource to JSON
 	body, err := json.MarshalIndent(updateSource, "", "  ")
 	if err != nil {
 		log.Printf("Failed to marshal updateSource: %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to marshal updateSource: %w", err)
 	}
 	log.Printf("updateSource: %s\n", string(body))
 
+	// Create the HTTP PATCH request
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Failed to create HTTP request: %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json-patch+json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 	req = req.WithContext(ctx)
 
-	res := Source{}
+	// Send the request and handle the response
+	var res Source
 	if err := c.sendRequest(req, &res); err != nil {
 		log.Printf("Failed updating source: %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to update source: %w", err)
 	}
+
+	resBody, _ := json.MarshalIndent(res, "", "  ")
+	log.Printf("Response Body is: %s\n", string(resBody))
 
 	return &res, nil
 }
@@ -183,9 +189,9 @@ func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, err
 		if err != nil {
 			return nil, err
 		}
-
+		source.ID = sourceResponse.ID
 		// Add connector attributes
-		res, err = c.AddConnectorAttributesToMicrosoftEntraSource(ctx, sourceResponse)
+		res, err = c.AddConnectorAttributesToMicrosoftEntraSource(ctx, source)
 		if err != nil {
 			return nil, err
 		}
@@ -323,7 +329,7 @@ func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile []*Updat
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json-patch+json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
@@ -438,7 +444,7 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/cc/api/role/delete/?id=%s", c.BaseURL, role.ID), bytes.NewBuffer(body))
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/v3/role/%s", c.BaseURL, role.ID), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
