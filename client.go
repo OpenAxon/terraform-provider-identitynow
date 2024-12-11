@@ -287,7 +287,25 @@ func (c *Client) GetSourceEntitlements(ctx context.Context, id string) ([]*Sourc
 		log.Fatal(err)
 		return nil, err
 	}
+	return res, nil
+}
 
+func (c *Client) GetSourceEntitlement(ctx context.Context, id string, nameFilter string) ([]*SourceEntitlement, error) {
+	filter := fmt.Sprintf("source.id eq \"%s\" and (name sw \"%s\")", id, nameFilter)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/entitlements?filters=%s", c.BaseURL, url.QueryEscape(filter)), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	var res []*SourceEntitlement
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Source Entitlements get response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
 	return res, nil
 }
 
@@ -397,6 +415,7 @@ func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
 		log.Printf("New request failed:%+v\n", err)
 		return nil, err
 	}
+	log.Printf("Request role is: %v\n", req)
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
@@ -405,7 +424,7 @@ func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
 
 	res := Role{}
 	if err := c.sendRequest(req, &res); err != nil {
-		log.Printf("Failed source creation response:%+v\n", res)
+		log.Printf("Failed role creation response:%+v\n", res)
 		log.Fatal(err)
 		return nil, err
 	}
@@ -639,16 +658,15 @@ func (c *Client) DeleteAccountSchema(ctx context.Context, accountSchema *Account
 	return nil
 }
 
-func (c *Client) CreatePasswordPolicy(ctx context.Context, attributes *PasswordPolicy) (*PasswordPolicy, error) {
-	endpoint := fmt.Sprintf("%s/cc/api/passwordPolicy/create", c.BaseURL)
-	data, _ := setPasswordPolicyUrlValues(attributes)
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(data.Encode()))
+func (c *Client) CreatePasswordPolicy(ctx context.Context, passwordPolicy *PasswordPolicy) (*PasswordPolicy, error) {
+	body, err := json.Marshal(&passwordPolicy)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/beta/password-policies", c.BaseURL), bytes.NewBuffer(body))
 
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
@@ -663,16 +681,15 @@ func (c *Client) CreatePasswordPolicy(ctx context.Context, attributes *PasswordP
 	return &res, nil
 }
 
-func (c *Client) UpdatePasswordPolicy(ctx context.Context, attributes *PasswordPolicy) (*PasswordPolicy, error) {
-	endpoint := fmt.Sprintf("%s/cc/api/passwordPolicy/set/%s", c.BaseURL, attributes.ID)
-	data, _ := setPasswordPolicyUrlValues(attributes)
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(data.Encode()))
+func (c *Client) UpdatePasswordPolicy(ctx context.Context, passwordPolicy *PasswordPolicy) (*PasswordPolicy, error) {
 
+	body, err := json.Marshal(&passwordPolicy)
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/beta/password-policies", c.BaseURL), bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
@@ -688,7 +705,7 @@ func (c *Client) UpdatePasswordPolicy(ctx context.Context, attributes *PasswordP
 }
 
 func (c *Client) GetPasswordPolicy(ctx context.Context, passwordPolicyId string) (*PasswordPolicy, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/passwordPolicy/get/%s", c.BaseURL, passwordPolicyId), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/password-policies/%s", c.BaseURL, passwordPolicyId), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -707,9 +724,9 @@ func (c *Client) GetPasswordPolicy(ctx context.Context, passwordPolicyId string)
 }
 
 func (c *Client) DeletePasswordPolicy(ctx context.Context, passwordPolicyId string) error {
-	endpoint := fmt.Sprintf("%s/cc/api/passwordPolicy/delete/%s", c.BaseURL, passwordPolicyId)
+	endpoint := fmt.Sprintf("%s/beta/password-policies/%s", c.BaseURL, passwordPolicyId)
 
-	req, err := http.NewRequest("POST", endpoint, nil)
+	req, err := http.NewRequest("DELETE", endpoint, nil)
 
 	if err != nil {
 		return err

@@ -37,6 +37,7 @@ func flattenPasswordPolicy(d *schema.ResourceData, in *PasswordPolicy) error {
 	d.Set("use_identity_attributes", in.UseIdentityAttributes)
 	d.Set("validate_against_account_id", in.ValidateAgainstAccountID)
 	d.Set("validate_against_account_name", in.ValidateAgainstAccountName)
+	d.Set("source_ids", toArrayInterface(in.SourceIDs))
 
 	if in.ConnectedServices != nil {
 		d.Set("connected_services", flattenPasswordPolicyConnectedServices(in.ConnectedServices))
@@ -154,6 +155,10 @@ func expandPasswordPolicy(in *schema.ResourceData) (*PasswordPolicy, error) {
 
 	if v, ok := in.Get("validate_against_account_name").(bool); ok {
 		obj.ValidateAgainstAccountName = &v
+	}
+
+	if v, ok := in.Get("source_ids").([]interface{}); ok && len(v) > 0 {
+		obj.SourceIDs = toArrayString(v)
 	}
 
 	return &obj, nil

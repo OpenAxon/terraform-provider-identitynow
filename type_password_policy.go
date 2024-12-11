@@ -4,13 +4,13 @@ type PasswordPolicy struct {
 	AccountIDMinWordLength                *int                 `json:"accountIdMinWordLength,omitempty"`
 	AccountNameMinWordLength              *int                 `json:"accountNameMinWordLength,omitempty"`
 	ConnectedServices                     []*ConnectedServices `json:"connectedServices,omitempty"`
-	DateCreated                           string               `json:"dateCreated,omitempty"`
+	DateCreated                           interface{}          `json:"dateCreated,omitempty"`
 	DefaultPolicy                         *bool                `json:"defaultPolicy,omitempty"`
 	Description                           string               `json:"description,omitempty"`
 	EnablePasswordExpiration              *bool                `json:"enablePasswdExpiration,omitempty"`
 	FirstExpirationReminder               *int                 `json:"firstExpirationReminder,omitempty"`
 	ID                                    string               `json:"id,omitempty"`
-	LastUpdated                           string               `json:"lastUpdated,omitempty"`
+	LastUpdated                           interface{}          `json:"lastUpdated,omitempty"`
 	MaxLength                             *int                 `json:"maxLength,omitempty"`
 	MaxRepeatedChars                      *int                 `json:"maxRepeatedChars,omitempty"`
 	MinAlpha                              *int                 `json:"minAlpha,omitempty"`
@@ -31,6 +31,7 @@ type PasswordPolicy struct {
 	UseIdentityAttributes                 *bool                `json:"useIdentityAttributes,omitempty"`
 	ValidateAgainstAccountID              *bool                `json:"validateAgainstAccountId,omitempty"`
 	ValidateAgainstAccountName            *bool                `json:"validateAgainstAccountName,omitempty"`
+	SourceIDs                             []string             `json:"sourceIds,omitempty"`
 }
 
 type ConnectedServices struct {

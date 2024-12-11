@@ -10,7 +10,7 @@ type Role struct {
 	LegacyMembershipInfo interface{}   `json:"legacyMembershipInfo,omitempty"`
 	Enabled              *bool         `json:"enabled,omitempty"`
 	Segments             []interface{} `json:"segments,omitempty"`
-	Membership           struct {
+	Membership           *struct {
 		Type     string `json:"type,omitempty"`
 		Criteria struct {
 			Operation   string          `json:"operation,omitempty"`
