@@ -145,6 +145,14 @@ func passwordPolicyFields() map[string]*schema.Schema {
 			Optional:    true,
 			Description: "Disallow account name fragments?",
 		},
+		"source_ids": {
+			Type:        schema.TypeList,
+			Optional:    true,
+			Description: "List of sources",
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 	}
 	return s
 }

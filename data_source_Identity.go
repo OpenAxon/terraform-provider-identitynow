@@ -32,5 +32,5 @@ func dataSourceIdentityRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	return flattenIdentity(d, identity)
+	return flattenIdentity(d, identity[0])
 }

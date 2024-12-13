@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -82,7 +83,7 @@ func (c *Client) GetSource(ctx context.Context, id string) (*Source, error) {
 	return &res, nil
 }
 
-func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, error) {
+func (c *Client) CreateSourceRequest(ctx context.Context, source *Source) (*Source, error) {
 	body, err := json.Marshal(&source)
 	if err != nil {
 		return nil, err
@@ -104,8 +105,105 @@ func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, err
 		log.Fatal(err)
 		return nil, err
 	}
+	return &res, nil
+}
+
+func (c *Client) AddConnectorAttributesToMicrosoftEntraSource(ctx context.Context, source *Source) (*Source, error) {
+	if source == nil || source.ConnectorAttributes == nil {
+		return nil, fmt.Errorf("source or ConnectorAttributes cannot be nil")
+	}
+
+	var updateSource []*UpdateSource
+
+	// Reflect on the ConnectorAttributes struct
+	val := reflect.ValueOf(source.ConnectorAttributes).Elem()
+	typ := val.Type()
+
+	for i := 0; i < val.NumField(); i++ {
+		field := typ.Field(i)
+		fieldName := getJSONFieldName(field)
+		if fieldName == "" { // Skip fields without valid JSON tags
+			continue
+		}
+
+		fieldValue := val.Field(i).Interface()
+
+		// Skip empty or nil values
+		if isEmptyValue(fieldValue) {
+			continue
+		}
+
+		// Create the update source object
+		updateSource = append(updateSource, &UpdateSource{
+			Op:    "add",
+			Path:  "/connectorAttributes/" + fieldName,
+			Value: fieldValue,
+		})
+	}
+
+	if len(updateSource) == 0 {
+		log.Printf("No attributes to update")
+		return source, nil // Return the original source if nothing to update
+	}
+
+	// Marshal the updateSource to JSON
+	body, err := json.MarshalIndent(updateSource, "", "  ")
+	if err != nil {
+		log.Printf("Failed to marshal updateSource: %v\n", err)
+		return nil, fmt.Errorf("failed to marshal updateSource: %w", err)
+	}
+	log.Printf("updateSource: %s\n", string(body))
+
+	// Create the HTTP PATCH request
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/sources/%s", c.BaseURL, source.ID), bytes.NewBuffer(body))
+	if err != nil {
+		log.Printf("Failed to create HTTP request: %v\n", err)
+		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json-patch+json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+	req = req.WithContext(ctx)
+
+	// Send the request and handle the response
+	var res Source
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed updating source: %v\n", err)
+		return nil, fmt.Errorf("failed to update source: %w", err)
+	}
+
+	resBody, _ := json.MarshalIndent(res, "", "  ")
+	log.Printf("Response Body is: %s\n", string(resBody))
 
 	return &res, nil
+}
+
+func (c *Client) CreateSource(ctx context.Context, source *Source) (*Source, error) {
+	var res *Source
+
+	if source.Connector == "Microsoft-Entra" {
+		newSource := *source
+		newSource.ConnectorAttributes = nil
+
+		// Create source request
+		sourceResponse, err := c.CreateSourceRequest(ctx, &newSource)
+		if err != nil {
+			return nil, err
+		}
+		source.ID = sourceResponse.ID
+		// Add connector attributes
+		res, err = c.AddConnectorAttributesToMicrosoftEntraSource(ctx, source)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		var err error
+		res, err = c.CreateSourceRequest(ctx, source)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return res, nil
 }
 
 func (c *Client) UpdateSource(ctx context.Context, source *Source) (*Source, error) {
@@ -156,7 +254,7 @@ func (c *Client) DeleteSource(ctx context.Context, source *Source) error {
 }
 
 func (c *Client) GetAccessProfile(ctx context.Context, id string) (*AccessProfile, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v3/access-profiles/%s", c.BaseURL, id), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -189,7 +287,25 @@ func (c *Client) GetSourceEntitlements(ctx context.Context, id string) ([]*Sourc
 		log.Fatal(err)
 		return nil, err
 	}
+	return res, nil
+}
 
+func (c *Client) GetSourceEntitlement(ctx context.Context, id string, nameFilter string) ([]*SourceEntitlement, error) {
+	filter := fmt.Sprintf("source.id eq \"%s\" and (name sw \"%s\")", id, nameFilter)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/entitlements?filters=%s", c.BaseURL, url.QueryEscape(filter)), nil)
+	if err != nil {
+		log.Printf("Creation of new http request failed: %+v\n", err)
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	var res []*SourceEntitlement
+	if err := c.sendRequest(req, &res); err != nil {
+		log.Printf("Failed Source Entitlements get response:%+v\n", res)
+		log.Fatal(err)
+		return nil, err
+	}
 	return res, nil
 }
 
@@ -199,7 +315,7 @@ func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessP
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v2/access-profiles", c.BaseURL), bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v3/access-profiles", c.BaseURL), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -220,18 +336,18 @@ func (c *Client) CreateAccessProfile(ctx context.Context, accessProfile *AccessP
 	return &res, nil
 }
 
-func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessProfile, id string) (*AccessProfile, error) {
+func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile []*UpdateAccessProfile, id interface{}) (*AccessProfile, error) {
 	body, err := json.Marshal(&accessProfile)
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, id), bytes.NewBuffer(body))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/v3/access-profiles/%s", c.BaseURL, id), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json-patch+json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
@@ -247,7 +363,7 @@ func (c *Client) UpdateAccessProfile(ctx context.Context, accessProfile *AccessP
 }
 
 func (c *Client) DeleteAccessProfile(ctx context.Context, accessProfile *AccessProfile) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/v2/access-profiles/%s", c.BaseURL, accessProfile.ID), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/v3/access-profiles/%s", c.BaseURL, accessProfile.ID), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return err
@@ -299,6 +415,7 @@ func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
 		log.Printf("New request failed:%+v\n", err)
 		return nil, err
 	}
+	log.Printf("Request role is: %v\n", req)
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
@@ -307,7 +424,7 @@ func (c *Client) CreateRole(ctx context.Context, role *Role) (*Role, error) {
 
 	res := Role{}
 	if err := c.sendRequest(req, &res); err != nil {
-		log.Printf("Failed source creation response:%+v\n", res)
+		log.Printf("Failed role creation response:%+v\n", res)
 		log.Fatal(err)
 		return nil, err
 	}
@@ -346,7 +463,7 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/cc/api/role/delete/?id=%s", c.BaseURL, role.ID), bytes.NewBuffer(body))
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/v3/role/%s", c.BaseURL, role.ID), bytes.NewBuffer(body))
 	if err != nil {
 		log.Printf("Creation of new http request failed:%+v\n", err)
 		return nil, err
@@ -366,25 +483,29 @@ func (c *Client) DeleteRole(ctx context.Context, role *Role) (*Role, error) {
 	return &res, nil
 }
 
-func (c *Client) GetIdentity(ctx context.Context, alias string) (*Identity, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/v2/identities/%s", c.BaseURL, alias), nil)
+func (c *Client) GetIdentity(ctx context.Context, alias string) ([]*Identity, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/identities?filters=alias", c.BaseURL)+url.QueryEscape(" eq ")+fmt.Sprintf("\"%s\"", alias), nil)
+
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
 	}
+	log.Printf("GetIdentity Request is: %+v\n", req)
 
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
 
-	res := Identity{}
+	var res []*Identity
 	if err := c.sendRequest(req, &res); err != nil {
 		log.Printf("Failed Identity get response:%+v\n", res)
 		log.Fatal(err)
 		return nil, err
 	}
 
-	return &res, nil
+	log.Printf("GetIdentity Response is: %+v\n", res)
+
+	return res, nil
 }
 
 func (c *Client) GetAccountAggregationSchedule(ctx context.Context, id string) (*AccountAggregationSchedule, error) {
@@ -537,16 +658,15 @@ func (c *Client) DeleteAccountSchema(ctx context.Context, accountSchema *Account
 	return nil
 }
 
-func (c *Client) CreatePasswordPolicy(ctx context.Context, attributes *PasswordPolicy) (*PasswordPolicy, error) {
-	endpoint := fmt.Sprintf("%s/cc/api/passwordPolicy/create", c.BaseURL)
-	data, _ := setPasswordPolicyUrlValues(attributes)
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(data.Encode()))
+func (c *Client) CreatePasswordPolicy(ctx context.Context, passwordPolicy *PasswordPolicy) (*PasswordPolicy, error) {
+	body, err := json.Marshal(&passwordPolicy)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/beta/password-policies", c.BaseURL), bytes.NewBuffer(body))
 
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
@@ -561,16 +681,15 @@ func (c *Client) CreatePasswordPolicy(ctx context.Context, attributes *PasswordP
 	return &res, nil
 }
 
-func (c *Client) UpdatePasswordPolicy(ctx context.Context, attributes *PasswordPolicy) (*PasswordPolicy, error) {
-	endpoint := fmt.Sprintf("%s/cc/api/passwordPolicy/set/%s", c.BaseURL, attributes.ID)
-	data, _ := setPasswordPolicyUrlValues(attributes)
-	req, err := http.NewRequest("POST", endpoint, strings.NewReader(data.Encode()))
+func (c *Client) UpdatePasswordPolicy(ctx context.Context, passwordPolicy *PasswordPolicy) (*PasswordPolicy, error) {
 
+	body, err := json.Marshal(&passwordPolicy)
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/beta/password-policies", c.BaseURL), bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
@@ -586,7 +705,7 @@ func (c *Client) UpdatePasswordPolicy(ctx context.Context, attributes *PasswordP
 }
 
 func (c *Client) GetPasswordPolicy(ctx context.Context, passwordPolicyId string) (*PasswordPolicy, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/cc/api/passwordPolicy/get/%s", c.BaseURL, passwordPolicyId), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/beta/password-policies/%s", c.BaseURL, passwordPolicyId), nil)
 	if err != nil {
 		log.Printf("Creation of new http request failed: %+v\n", err)
 		return nil, err
@@ -605,9 +724,9 @@ func (c *Client) GetPasswordPolicy(ctx context.Context, passwordPolicyId string)
 }
 
 func (c *Client) DeletePasswordPolicy(ctx context.Context, passwordPolicyId string) error {
-	endpoint := fmt.Sprintf("%s/cc/api/passwordPolicy/delete/%s", c.BaseURL, passwordPolicyId)
+	endpoint := fmt.Sprintf("%s/beta/password-policies/%s", c.BaseURL, passwordPolicyId)
 
-	req, err := http.NewRequest("POST", endpoint, nil)
+	req, err := http.NewRequest("DELETE", endpoint, nil)
 
 	if err != nil {
 		return err

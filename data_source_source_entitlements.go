@@ -22,7 +22,7 @@ func dataSourceSourceEntitlementRead(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 
-	sourceEntitlements, err := client.GetSourceEntitlements(context.Background(), d.Get("source_id").(string))
+	sourceEntitlements, err := client.GetSourceEntitlement(context.Background(), d.Get("source_id").(string), d.Get("name").(string))
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
 		_, notFound := err.(*NotFoundError)
@@ -33,7 +33,5 @@ func dataSourceSourceEntitlementRead(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 
-	entitlement := getEntitlement(sourceEntitlements, d.Get("name").(string))
-
-	return flattenSourceEntitlement(d, entitlement)
+	return flattenSourceEntitlement(d, sourceEntitlements[0])
 }

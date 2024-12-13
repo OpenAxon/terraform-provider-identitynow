@@ -31,9 +31,10 @@ func resourceAccountSchemaCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	newAccountSchema, err := client.GetAccountSchema(context.Background(), accountSchema.SourceID, accountSchema.ID)
 	if err != nil {
-		// non-panicking type assertion, 2nd arg is boolean indicating type match
+		// Handle NotFoundError and other errors as before
 		_, notFound := err.(*NotFoundError)
 		if notFound {
 			log.Printf("Source ID %s not found.", accountSchema.SourceID)
@@ -42,23 +43,27 @@ func resourceAccountSchemaCreate(d *schema.ResourceData, m interface{}) error {
 		}
 		return err
 	}
+
 	newAccountSchema.SourceID = accountSchema.SourceID
-	for i := range accountSchema.Attributes {
-		newAccountSchema.Attributes = append(newAccountSchema.Attributes, accountSchema.Attributes[i])
-	}
-	seen := make(map[*AccountSchemaAttribute]bool)
+
+	// Use a map to track seen attributes based on a combination of fields
+	seen := make(map[string]bool)
 	result := []*AccountSchemaAttribute{}
 
-	// Loop through the slice, adding elements to the map if they haven't been seen before
-	for _, val := range newAccountSchema.Attributes {
-		if _, ok := seen[val]; !ok {
-			seen[val] = true
-			result = append(result, val)
-			fmt.Printf("seen: %v", seen)
+	// Iterate over accountSchema.Attributes to filter out duplicates
+	for _, attribute := range accountSchema.Attributes {
+		// Create a unique key for each attribute based on important fields (e.g., "name")
+		key := attribute.Name // or use a combination of "Name" and other unique fields if necessary
+		if _, ok := seen[key]; !ok {
+			seen[key] = true
+			result = append(result, attribute)
 		}
 	}
+
+	// Update the newAccountSchema with the filtered attributes
 	newAccountSchema.Attributes = result
-	newAccountSchema.ID = accountSchema.SourceID
+	newAccountSchema.ID = accountSchema.ID
+
 	log.Printf("[INFO] Creating Account Schema Attribute for source %+v\n", newAccountSchema.SourceID)
 
 	accountSchemaResponse, err := client.UpdateAccountSchema(context.Background(), newAccountSchema)

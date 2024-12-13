@@ -12,31 +12,64 @@ var (
 )
 
 func init() {
-	TRUE := true
 	FALSE := false
 	testAccessProfileConf = &AccessProfile{
-		Name:                         "test name",
-		Description:                  "test Description",
-		SourceID:                     1234,
-		OwnerID:                      456,
-		Entitlements:                 []string{"1234", "456"},
-		DeniedCommentsRequired:       &FALSE,
-		Disabled:                     &TRUE,
-		RequestCommentsRequired:      &FALSE,
-		ApprovalSchemes:              "test",
-		RevokeRequestApprovalSchemes: "test",
+		Name:        "test name",
+		Description: "test Description",
+		AccessProfileOwner: &ObjectInfo{
+			ID:   "2c9180887412345678948078d29f2e46",
+			Name: "SRE Test",
+			Type: "IDENTITY",
+		},
+		AccessProfileSource: &ObjectInfo{
+			ID:   "2c91808374bc866a0178948078d29f2e46",
+			Name: "Product platform, Azure portal, AzureUSGovernment",
+			Type: "SOURCE",
+		},
+		Entitlements: []*ObjectInfo{
+			{
+				ID:   "2c918088747654398948078d29f2e46",
+				Name: "Operators_AG1",
+				Type: "ENTITLEMENT",
+			},
+			{
+				ID:   "2c918009437654398948078d29f2e46",
+				Name: "Integrator_AG1",
+				Type: "ENTITLEMENT",
+			},
+		},
+		Enabled: &FALSE,
 	}
 	testAccessProfileInterface = map[string]interface{}{
-		"name":                            "test name",
-		"description":                     "test Description",
-		"source_id":                       1234,
-		"owner_id":                        456,
-		"entitlements":                    []interface{}{"1234", "456"},
-		"denied_comments_required":        false,
-		"disabled":                        true,
-		"request_comments_required":       false,
-		"approval_schemes":                "test",
-		"revoke_request_approval_schemes": "test",
+		"name":        "test name",
+		"description": "test Description",
+		"source": []interface{}{
+			map[string]interface{}{
+				"id":   "2c91808374bc866a0178948078d29f2e46",
+				"name": "Product platform, Azure portal, AzureUSGovernment",
+				"type": "SOURCE",
+			},
+		},
+		"owner": []interface{}{
+			map[string]interface{}{
+				"id":   "2c9180887412345678948078d29f2e46",
+				"name": "SRE Test",
+				"type": "IDENTITY",
+			},
+		},
+		"entitlements": []interface{}{
+			map[string]interface{}{
+				"id":   "2c918088747654398948078d29f2e46",
+				"name": "Operators_AG1",
+				"type": "ENTITLEMENT",
+			},
+			map[string]interface{}{
+				"id":   "2c918009437654398948078d29f2e46",
+				"name": "Integrator_AG1",
+				"type": "ENTITLEMENT",
+			},
+		},
+		"enabled": false,
 	}
 }
 

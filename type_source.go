@@ -171,3 +171,9 @@ type GroupSearchDNs struct {
 	SearchScope         string `json:"searchScope,omitempty"`
 	IterateSearchFilter string `json:"iterateSearchFilter"`
 }
+
+type UpdateSource struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value"`
+}
