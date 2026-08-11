@@ -617,8 +617,6 @@ func (c *Client) UpdateAccountSchema(ctx context.Context, accountSchema *Account
 func (c *Client) DeleteAccountSchema(ctx context.Context, accountSchema *AccountSchema) error {
 	endpoint := fmt.Sprintf("%s/v3/sources/%s/schemas/%s", c.BaseURL, accountSchema.SourceID, accountSchema.ID)
 
-	client := &http.Client{}
-
 	req, err := http.NewRequest("DELETE", endpoint, nil)
 
 	if err != nil {
@@ -629,7 +627,7 @@ func (c *Client) DeleteAccountSchema(ctx context.Context, accountSchema *Account
 	req.Header.Set("Accept", "application/json; charset=utf-8")
 
 	req = req.WithContext(ctx)
-	res, err := client.Do(req)
+	res, err := c.HTTPClient.Do(req)
 
 	if err != nil {
 		log.Printf("Failed Account Schema Attribute deletion. response:%+v\n", res)
