@@ -102,13 +102,11 @@ func TestAccountAggregationScheduleReadReturnsAPIError(t *testing.T) {
 
 func TestDeleteAccountSchemaReturnsTransportError(t *testing.T) {
 	wantErr := errors.New("transport unavailable")
-	originalTransport := http.DefaultTransport
-	http.DefaultTransport = roundTripFunc(func(*http.Request) (*http.Response, error) {
+	client := NewClient("https://identitynow.test", "client-id", "client-secret")
+	client.HTTPClient.Transport = roundTripFunc(func(*http.Request) (*http.Response, error) {
 		return nil, wantErr
 	})
-	t.Cleanup(func() { http.DefaultTransport = originalTransport })
 
-	client := NewClient("https://identitynow.test", "client-id", "client-secret")
 	err := client.DeleteAccountSchema(context.Background(), &AccountSchema{})
 	if !errors.Is(err, wantErr) {
 		t.Fatalf("expected transport error %q, got %v", wantErr, err)
