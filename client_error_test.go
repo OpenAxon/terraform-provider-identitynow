@@ -3,10 +3,13 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 type roundTripFunc func(*http.Request) (*http.Response, error)
@@ -65,6 +68,35 @@ func TestClientMethodsReturnAPIError(t *testing.T) {
 				t.Fatalf("expected IdentityNow API error, got %q", err)
 			}
 		})
+	}
+}
+
+func TestAccountAggregationScheduleReadReturnsAPIError(t *testing.T) {
+	originalTransport := http.DefaultTransport
+	http.DefaultTransport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		body := `{"messages":[{"text":"IdentityNow unavailable"}]}`
+		if strings.HasSuffix(req.URL.Path, "/oauth/token") {
+			body = `{"access_token":"token"}`
+		}
+		status := http.StatusInternalServerError
+		if strings.HasSuffix(req.URL.Path, "/oauth/token") {
+			status = http.StatusOK
+		}
+		return &http.Response{
+			StatusCode: status,
+			Status:     fmt.Sprintf("%d %s", status, http.StatusText(status)),
+			Header:     make(http.Header),
+			Body:       io.NopCloser(strings.NewReader(body)),
+			Request:    req,
+		}, nil
+	})
+	t.Cleanup(func() { http.DefaultTransport = originalTransport })
+
+	d := schema.TestResourceDataRaw(t, accountAggregationScheduleFields(), map[string]interface{}{})
+	d.SetId("source-id")
+	err := resourceAccountAggregationScheduleRead(d, &Config{URL: "https://identitynow.test"})
+	if err == nil || !strings.Contains(err.Error(), "IdentityNow unavailable") {
+		t.Fatalf("expected IdentityNow API error, got %v", err)
 	}
 }
 
