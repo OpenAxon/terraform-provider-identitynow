@@ -54,9 +54,6 @@ func resourceAccountAggregationScheduleRead(d *schema.ResourceData, m interface{
 	}
 
 	accountAggregationSchedule, err := client.GetAccountAggregationSchedule(context.Background(), d.Id())
-	if accountAggregationSchedule.CronExpressions != nil {
-		accountAggregationSchedule.SourceID = d.Id()
-	}
 	if err != nil {
 		// non-panicking type assertion, 2nd arg is boolean indicating type match
 		_, notFound := err.(*NotFoundError)
@@ -66,6 +63,9 @@ func resourceAccountAggregationScheduleRead(d *schema.ResourceData, m interface{
 			return nil
 		}
 		return err
+	}
+	if accountAggregationSchedule.CronExpressions != nil {
+		accountAggregationSchedule.SourceID = d.Id()
 	}
 
 	err = flattenAccountAggregationSchedule(d, accountAggregationSchedule)
